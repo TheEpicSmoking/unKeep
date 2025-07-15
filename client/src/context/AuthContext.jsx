@@ -19,40 +19,76 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const signup = async (username, email, password) => {
-    let res = await api.post('auth/register', { username, email, password })
-    const emailOrUsername = email
-    res = await api.post('auth/login', { emailOrUsername, password })
-    setAccessToken(res.data.accessToken)
-    localStorage.setItem('accessToken', res.data.accessToken)
+  const register = async (username, email, password) => {
+    try {
+      let res = await api.post('auth/register', { username, email, password })
+      const emailOrUsername = email
+      res = await api.post('auth/login', { emailOrUsername, password })
+      setAccessToken(res.data.accessToken)
+      localStorage.setItem('accessToken', res.data.accessToken)
+    } catch (error) {
+      throw error
+    }
   }
 
   const login = async (emailOrUsername, password) => {
-    const res = await api.post('auth/login', { emailOrUsername, password })
-    setAccessToken(res.data.accessToken)
-    localStorage.setItem('accessToken', res.data.accessToken)
+    try {
+      const res = await api.post('auth/login', { emailOrUsername, password })
+      setAccessToken(res.data.accessToken)
+      localStorage.setItem('accessToken', res.data.accessToken)
+    } catch (error) {
+      throw error
+    }
   }
 
   const logout = () => {
+    try {
     localStorage.removeItem('accessToken')
     setAccessToken(null)
     navigate('/login')
+    } catch (error) {
+      throw error
+    }
   }
 
   const refresh = async () => {
-    const res = await api.post('auth/refresh')
-    setAccessToken(res.data.accessToken)
-    localStorage.setItem('accessToken', res.data.accessToken)
-    return res.data.accessToken
+    try {
+      const res = await api.post('auth/refresh')
+      setAccessToken(res.data.accessToken)
+      localStorage.setItem('accessToken', res.data.accessToken)
+      return res.data.accessToken
+    } catch (error) {
+      logout()
+      throw error
+    }
+  }
+
+  // NOTES
+
+  const getNotes = async () => {
+    try {
+      const res = await api.get('notes', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
   }
 
   const createNote = async (title, content) => {
-    const res = await api.post('notes', { title, content }, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    return res.data
+    try {
+      const res = await api.post('notes', { title, content }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
   }
 
   const setupInterceptor = () => {
@@ -60,10 +96,8 @@ export function AuthProvider({ children }) {
       res => res,
       async error => {
         const originalRequest = error.config
-        originalRequest.__retry = true
-        console.log('Error response:', error.response)
-        console.log(originalRequest.__retry)
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest.__retry = false
+        if (originalRequest.headers.Authorization && error.response?.status === 401 && !originalRequest._retry) {
 
           originalRequest._retry = true
 
@@ -76,13 +110,13 @@ export function AuthProvider({ children }) {
             return Promise.reject(err)
           }
         }
-        return error
+        return Promise.reject(error)
       }
     )
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, signup, createNote, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )

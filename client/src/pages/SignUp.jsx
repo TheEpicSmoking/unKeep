@@ -1,143 +1,52 @@
 import { useState } from 'react'
-import { Stack, Grid ,Card, Typography,InputAdornment, IconButton, FormControl, OutlinedInput, FormLabel, Button, Alert, List, Collapse, ListItem }  from '@mui/material'
-import { TransitionGroup } from 'react-transition-group'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
-import Icon from '../components/Icon.jsx'
+import { Button, Typography } from '@mui/material'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNavigate, Link } from 'react-router'
+import { useTheme } from '@mui/material/styles'
+import AuthFormWrapper from '../components/AuthFormWrapper'
+import FormField from '../components/FormField'
+import ErrorLog from '../components/ErrorLog'
 
-export default function SignUp() {
-  const navigate = useNavigate();
-  const { signup } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordValue, setPasswordValue] = useState('');
-  const [errors, setErrors] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const renderErrorItem = ({ error, index }) => (
-    <ListItem key={index} disablePadding>
-      <Alert severity="error" sx={{ width: '100%', marginBottom: 1 }}>
-        {error}
-      </Alert>
-    </ListItem>
-  );
-  
+export default function Login() {
+  const theme = useTheme()
+  const { register } = useAuth()
+  const navigate = useNavigate()
+  const [passwordValue, setPasswordValue] = useState('')
+  const [errors, setErrors] = useState([])
+  const [loading, setLoading] = useState(false)
+
   const handleSubmit = async () => {
-    setErrors([]);
-    setLoading(true);
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    setErrors([])
+    setLoading(true)
+    const usernamemail = document.getElementById('username').value
+    const email = document.getElementById('email').value
+    const password = document.getElementById('password').value
 
     try {
-      await signup(username, email, password);
-      await navigate('/');      
+      await register(usernamemail, email, password)
+      navigate('/')
     } catch (error) {
-      console.error('There was an error signing up:', error);
-      if (error.response) {
-        const errorData = error.response.data.message || error.response.data.error || 'Server error occurred';
-        if (Array.isArray(errorData)) {
-          setErrors(errorData);
-        } else {
-          setErrors([errorData]);
-        }
-      } else if (error.request) {
-        setErrors(['Unable to connect to server. Please check your connection and try again.']);
-      } else {
-        setErrors(['An unexpected error occurred. Please try again.']);
-      }
+      const msg = error.response?.data?.message || error.response?.data?.error || 'Server error'
+      setErrors(Array.isArray(msg) ? msg : [msg])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <Grid container sx={{ height: '100vh', width: '100vw', backgroundColor: '#f0f0f0ff', overflow: "hidden"}} alignItems="center" justifyContent="center">
-      <Stack direction="column" justifyContent="space-between" alignItems={'center'} spacing={2} sx={{ width: '100%', padding: 2 }}>
-        <Card variant="outlined" sx={{ padding: 2, width: '85%', maxWidth: 450, transition: 'transform 0.3s ease-in-out' }}>
-          <Icon sx={{ fontSize: 20, color: '#1976d2', marginBottom: 2, width: "auto" }} />
-          <Typography variant="h5" component="h1" align="center" gutterBottom>
-            Sign Up
+      <AuthFormWrapper title="Sign Up">
+        <FormField id="username" label="Username" autoComplete="username" placeholder="Es. JohnDoe" />
+        <FormField id="email" label="Email" autoComplete="email" placeholder="your@email.com" />      
+        <FormField type="password" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />
+        <ErrorLog errors={errors} />
+        <Button variant="contained" fullWidth onClick={handleSubmit} disabled={loading}>
+          <Typography variant="button" sx={{ textTransform: 'none' }}>
+            {loading ? 'Signing Up...' : 'Sign Up'}
           </Typography>
-          <FormControl fullWidth sx ={{ marginTop: 2 }}>
-            <FormLabel htmlFor='username'>Username</FormLabel>
-            <OutlinedInput
-              type='text'
-              autoComplete="username"
-              name="username"
-              id="username"
-              variant="outlined"
-              fullWidth
-              placeholder='Es. JohnDoe'
-              required
-            />
-          </FormControl>
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <FormLabel htmlFor='email'>Email</FormLabel>
-            <OutlinedInput
-              type='email'
-              autoComplete="email"
-              name="email"
-              id="email"
-              variant="outlined"
-              placeholder='your@email.com'
-              fullWidth
-            />
-          </FormControl>
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <FormLabel htmlFor='password'>Password</FormLabel>
-            <OutlinedInput
-              type={showPassword ? 'text' : 'password'}
-              variant="outlined"
-              name="password"
-              id="password"
-              placeholder='*********'
-              value={passwordValue}
-              onChange={e => setPasswordValue(e.target.value)}
-              endAdornment={
-                passwordValue && (
-                  <InputAdornment position="end">
-                    <IconButton
-                      edge="end"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      onPointerDown={() => setShowPassword(true)}
-                      onPointerUp={() => setShowPassword(false)}
-                      onPointerLeave={() => setShowPassword(false)}
-                      tabIndex={-1}
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }
-              fullWidth
-              required
-            />
-          </FormControl>
-          <List sx={{ mt: 1 }}>
-            <TransitionGroup>
-              {errors.map((error, index) => (
-                <Collapse key={index}>
-                  {renderErrorItem({ error, index })}
-                </Collapse>
-              ))}
-            </TransitionGroup>
-          </List>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            fullWidth 
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            <Typography variant="button" sx={{ textTransform: 'none' }}>
-              {loading ? 'Signing Up...' : 'Sign Up'}
-            </Typography>
-          </Button>
-          <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
-            Already have an account? <Link to="/login">Log In</Link>
-          </Typography>
-        </Card>
-      </Stack>
-    </Grid>
+        </Button>
+        <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+          Already have an account? <Link className='link' to="/login">Log In</Link>
+        </Typography>
+      </AuthFormWrapper>
   )
 }

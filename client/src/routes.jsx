@@ -7,7 +7,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
-      <Route path="/signup" element={<SignUp />} />
+      <Route path="/register" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
       <Route path="*" element={<div>404 Page Not Found</div>} />
     </Routes>

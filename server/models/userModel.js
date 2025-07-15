@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "Password is required"],
         minlength: [6, "Password must be at least 6 characters long"],
         maxlength: [128, "Password cannot exceed 128 characters"],
-        match: [/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]).{1,}$/, "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"],
+        match: [/^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]).{1,}$/, "Password must contain at least one uppercase letter, one number and one special character"],
     },
     profilePicture: {
         type: String,
