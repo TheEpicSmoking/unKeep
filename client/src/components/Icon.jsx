@@ -7,7 +7,6 @@ export default function Icon(props) {
       {...props}
       viewBox="0 0 88 100"
     >
-      {/* Cappuccio della lampadina */}
       <rect
         x="38"
         y="0"
@@ -17,7 +16,6 @@ export default function Icon(props) {
         fill="currentColor"
       />
 
-      {/* Corpo della lampadina (una U più "gonfia") */}
       <path
         d="M30 20
            Q18 45, 25 70
@@ -31,13 +29,11 @@ export default function Icon(props) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-
-      {/* Piccoli dettagli del filamento (opzionali) */}
       <line
-        x1="45"
-        y1="65"
+        x1="43"
+        y1="45"
         x2="50"
-        y2="60"
+        y2="38"
         stroke="currentColor"
         strokeWidth="6"
       />
@@ -45,22 +41,22 @@ export default function Icon(props) {
         x1="50"
         y1="10"
         x2="50"
-        y2="60"
+        y2="40"
         stroke="currentColor"
-        strokeWidth="4"
+        strokeWidth="6"
       />
       <line
-        x1="55"
-        y1="65"
+        x1="57"
+        y1="45"
         x2="50"
-        y2="60"
+        y2="38"
         stroke="currentColor"
         strokeWidth="6"
       />
     </SvgIcon>
       <SvgIcon
         {...props}
-        style ={{width: 'auto', alignSelf: 'flex-end', justifyContent: 'end'}}
+        style ={{marginLeft: -0.5, width: 'auto', alignSelf: 'flex-end', justifyContent: 'end'}}
         viewBox="0 0 290 100"
       >
            <path

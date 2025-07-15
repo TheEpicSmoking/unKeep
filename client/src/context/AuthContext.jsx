@@ -45,7 +45,6 @@ export function AuthProvider({ children }) {
     try {
     localStorage.removeItem('accessToken')
     setAccessToken(null)
-    navigate('/login')
     } catch (error) {
       throw error
     }

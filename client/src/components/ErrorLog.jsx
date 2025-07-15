@@ -1,7 +1,7 @@
 import { Alert, Collapse, List, ListItem } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group'
 
-export default function ErrorList({ errors = [] }) {
+export default function ErrorLog({ errors = [] }) {
   return (
     <List sx={{ mt: 1 }}>
       <TransitionGroup>
