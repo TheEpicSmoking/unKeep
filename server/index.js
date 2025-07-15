@@ -36,9 +36,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (req, res) => {
-    res.send('Welcome to NoteHub Server');
-});
 console.log(MONGO_URI);
 mongoose.connect(MONGO_URI).then(() => {
     console.log('Connected to MongoDB');
