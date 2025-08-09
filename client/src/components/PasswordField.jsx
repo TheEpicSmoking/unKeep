@@ -19,10 +19,9 @@ export default function PasswordField({ id = 'password', value, onChange }) {
           value && (
             <InputAdornment position="end">
               <IconButton
-                onPointerDown={() => setShow(true)}
-                onPointerUp={() => setShow(false)}
-                onPointerLeave={() => setShow(false)}
-                tabIndex={-1}
+                aria-label="toggle password visibility"
+                sx ={{ color: 'primary.main' }}
+                onPointerDown={() => setShow(!show)}
               >
                 {show ? <Visibility /> : <VisibilityOff />}
               </IconButton>

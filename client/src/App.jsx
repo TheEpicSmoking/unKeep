@@ -6,9 +6,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     text: {
-      primary: '#000000',
-      secondary: '#00000099',
-      disabled: '#00000068',
+      primary: '#000000ff',
+      secondary: '#090909ff',
+      tertiary: '#ffffffff',
+      disabled: '#2d2d2dff',
       hint: '#00000080',
     },
     primary: {
@@ -18,7 +19,7 @@ const theme = createTheme({
       main: '#D8BFD8',
     },
     error: {
-      main: '#ec1e25',
+      main: '#FA5C00',
     },
     background: {
       default: '#FAD900',
