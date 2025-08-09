@@ -7,12 +7,13 @@
 html {
   height: 100%;
   background-color: #FAD900;
-  overflow: scroll;
+  overflow-y: hidden;
 }
 
 body {
   height: 100%;
-  overflow: scroll;
+
+  overflow-y: overlay;
   background-color: #FAD900;
   -webkit-overflow-scrolling: touch;
   -webkit-touch-callout: none;
@@ -22,6 +23,29 @@ body {
   left: 0;
 }
 
+/* Custom scrollbar for desktop/tablet devices only */
+@media (min-width: 769px) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(0, 0, 0);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Hide custom scrollbar on mobile devices to show default */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: initial;
+  }
+}
+
 .link {
   color: inherit;
 }
@@ -29,7 +53,6 @@ body {
 #root {
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height per mobile */
-  overflow: scroll;
   position: relative;
   display: flex;
   flex-direction: column;

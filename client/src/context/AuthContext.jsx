@@ -5,7 +5,7 @@ import axios from 'axios'
 const AuthContext = createContext()
 
 const api = axios.create({
-  baseURL: 'http://192.168.1.168:8000/api/',
+  baseURL: 'http://localhost:8000/api/',
   withCredentials: true
 })
 
