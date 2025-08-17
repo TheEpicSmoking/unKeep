@@ -5,7 +5,7 @@ import axios from 'axios'
 const AuthContext = createContext()
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: 'http://192.168.1.168:8000/api/',
   withCredentials: true
 })
 
@@ -36,6 +36,8 @@ export function AuthProvider({ children }) {
       const res = await api.post('auth/login', { emailOrUsername, password })
       setAccessToken(res.data.accessToken)
       localStorage.setItem('accessToken', res.data.accessToken)
+      /* SOLO IN PRODUZIONE */
+      localStorage.setItem('refreshToken', res.data.refreshToken)
     } catch (error) {
       throw error
     }
@@ -43,8 +45,10 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     try {
-    localStorage.removeItem('accessToken')
-    setAccessToken(null)
+      localStorage.removeItem('accessToken')
+      /* SOLO IN PRODUZIONE */
+      localStorage.removeItem('refreshToken')
+      setAccessToken(null)
     } catch (error) {
       throw error
     }
@@ -52,7 +56,10 @@ export function AuthProvider({ children }) {
 
   const refresh = async () => {
     try {
-      const res = await api.post('auth/refresh')
+      const res = await api.post('auth/refresh', {
+      /* SOLO IN PRODUZIONE */
+        'refreshToken': `${localStorage.getItem('refreshToken')}`
+    })
       setAccessToken(res.data.accessToken)
       localStorage.setItem('accessToken', res.data.accessToken)
       return res.data.accessToken
@@ -121,4 +128,6 @@ export function AuthProvider({ children }) {
   )
 }
 
-export const useAuth = () => useContext(AuthContext)
+export function useAuth() {
+  return useContext(AuthContext)
+}
