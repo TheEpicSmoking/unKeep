@@ -84,9 +84,22 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const createNote = async (title, content) => {
+  const createNote = async (title, content, collaborators, tags) => {
     try {
-      const res = await api.post('notes', { title, content }, {
+      const res = await api.post('notes', { title, content, collaborators, tags }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const getUsers = async (id) => {
+    try {
+      const res = await api.get(`users/${id}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -122,7 +135,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getUsers, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )

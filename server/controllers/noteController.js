@@ -42,8 +42,8 @@ export const getNotes = async (req, res) => {
                 { "collaborators.user": req.userId }
             ]
         })
-            .populate('author', 'username')
-            .populate('collaborators.user', 'username')
+            .populate('author', 'username profilePicture')
+            .populate('collaborators.user', 'username profilePicture')
             .sort({ createdAt: -1 });
         if (!notes || notes.length === 0) {
             return res.status(404).json({ error: 'No notes found' });

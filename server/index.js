@@ -9,12 +9,19 @@ import authRoutes from './routes/authRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
 import historyRoutes from './routes/historyRouter.js';
 import profileRoutes from './routes/profileRoutes.js';
-import { getUsers } from './controllers/userController.js';
+import { getUsers, getUser } from './controllers/userController.js';
+import { v2 as cloudinary } from 'cloudinary';
 
 // Load environment variables
 config();
 const PORT = process.env.PORT || 8000;
 const MONGO_URI = process.env.MONGO_URI || null;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const app = express();
 const server = createServer(app);
@@ -52,3 +59,4 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/profile', profileRoutes);
 app.get('/api/users', getUsers);
+app.get('/api/users/:id', getUser);
