@@ -110,6 +110,19 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const getMyProfile = async () => {
+    try {
+      const res = await api.get('users/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
   const setupInterceptor = () => {
     api.interceptors.response.use(
       res => res,
@@ -135,7 +148,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getUsers, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getUsers, getMyProfile, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )

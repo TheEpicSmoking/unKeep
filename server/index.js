@@ -8,8 +8,7 @@ import { config } from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
 import historyRoutes from './routes/historyRouter.js';
-import profileRoutes from './routes/profileRoutes.js';
-import { getUsers, getUser } from './controllers/userController.js';
+import userRoutes from './routes/userRoutes.js';
 import { v2 as cloudinary } from 'cloudinary';
 
 // Load environment variables
@@ -57,6 +56,4 @@ mongoose.connect(MONGO_URI).then(() => {
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/history', historyRoutes);
-app.use('/api/profile', profileRoutes);
-app.get('/api/users', getUsers);
-app.get('/api/users/:id', getUser);
+app.use('/api/users', userRoutes);

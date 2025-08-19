@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema({
         required: [true, "Username is required"],
         unique: true,
         trim: true,
-        lowercase: true,
         minlength: [3, "Username must be at least 3 characters long"],
         maxlength: [20, "Username cannot exceed 20 characters"],
         match: [/^[0-9A-Za-z]{0,}$/, "Username can only contain alphanumeric characters."],
@@ -30,7 +29,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: "https://example.com/default-profile-picture.png", // Replace with your default image URL
+        default: "",
     },
     createdAt: {
         type: Date,

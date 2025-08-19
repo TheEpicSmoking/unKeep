@@ -2,7 +2,7 @@ import { SvgIcon, Box } from "@mui/material";
 
 export default function Icon(props) {
   return (
-    <Box style={{ display: 'flex', justifyContent: 'center', spaceContent: 0 }}>
+    <Box style={{ display: 'flex', justifyContent: 'center', spaceContent: 0, paddingTop: "3px", paddingRight: "4px"}}>
      <SvgIcon
       {...props}
       viewBox="0 0 88 100"
