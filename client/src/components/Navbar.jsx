@@ -1,5 +1,5 @@
 
-import { AppBar, Toolbar, Button, Box, Avatar } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, Avatar, IconButton } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router';
 import Icon from './Icon.jsx';
@@ -32,12 +32,14 @@ export default function Navbar() {
 
   return (
     <AppBar position="fixed" sx={{ backgroundColor: theme.palette.primary.main }}>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center' }}>
-        <Icon sx={{ fontSize: 25, color: theme.palette.background}} />
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignSelf: 'center', width: { xs: '100%', md: '52%' } }}>
+        <IconButton onClick={() => navigate('/')} color="inherit" sx={{ p: 0, m:0 }}>
+          <Icon sx={{ fontSize: 25, color: theme.palette.background }} />
+        </IconButton>
         {loading ? null : profile ? (
           <Box sx={{ display: 'flex', alignItems: 'center'}}>
             <Button color="inherit" onClick={() => navigate('/profile')}>{profile.username}</Button>
-            <Avatar src={profile.profilePicture} variant="rounded" sx={{ border: `2px solid black`, outline: `3px solid rgb(255, 255, 255)`, boxShadow: "3px 3px 0px 3px rgba(255, 255, 255, 0.5)" }}/>
+            <Avatar src={profile.profilePicture} variant="rounded" sx={{ border: `2px solid black`, outline: `3px solid rgb(255, 255, 255)`, mr: "6px", boxShadow: "3px 3px 0px 3px rgba(255, 255, 255, 0.5)" }}/>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>

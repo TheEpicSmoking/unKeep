@@ -58,7 +58,7 @@ export default function Note({ children }) {
           </Typography>
             <Stack direction="row" spacing={1.5} sx={{pt:2, flexWrap: 'wrap'}}>
             {children.tags.map((tag, index) => (
-            <Typography key={index} variant="subtitle2" sx={{ bgcolor: stringToColor(tag), color: 'text.tertiary', borderRadius: 1, px: 1, boxShadow: "2px 2px 0px 3px rgb(0,0,0)", outline: 3, border: 2, outlineColor: 'primary.main' }}>
+            <Typography key={index} variant="subtitle2" sx={{ bgcolor: stringToColor(tag), color: 'text.tertiary', px: 1, boxShadow: "2px 2px 0px 3px rgb(0,0,0)", outline: 3, border: 3, outlineColor: 'primary.main' }}>
               {tag}
             </Typography>
             ))}

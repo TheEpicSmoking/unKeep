@@ -8,14 +8,14 @@ export default function FormField({ id, label, type = 'text', ...props }) {
         )
   } else {
         return (
-        <FormControl fullWidth sx={{ mt: 2 }}>
-        <FormLabel htmlFor={id}>{label}</FormLabel>
-        <OutlinedInput
-            id={id}
-            type={type}
-            name={id}
-            {...props}
-        />
+        <FormControl fullWidth sx={{ mt: 2, ...props.sx }}>
+            <FormLabel htmlFor={id} sx={{ fontSize: '1.25rem', fontWeight: { xs: 400, md: 500 }}}>{label}</FormLabel>
+            <OutlinedInput sx={{ borderRadius: 0 }}
+                id={id}
+                type={type}
+                name={id}
+                {...props}
+            />
         </FormControl>
     )
     }

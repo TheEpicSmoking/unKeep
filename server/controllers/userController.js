@@ -44,19 +44,53 @@ export const getUserProfile = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
     try {
-        const { username, profilePicture, email } = req.body;
+        console.log(req.body)
+        const { username, email } = req.body;
         const user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        user.username = username || user.username;
-        user.profilePicture = profilePicture || user.profilePicture;
-        user.email = email || user.email;
+        
+        // Update text fields if provided
+        if (username) user.username = username;
+        if (email) user.email = email;
+        
+        // Handle profile picture upload to Cloudinary if provided
+        if (req.file) {
+            try {
+                // Upload to Cloudinary
+                const uploadPromise = new Promise((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        { folder: 'profile_pictures' },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+                });
+                
+                const result = await uploadPromise;
+                user.profilePicture = result.secure_url;
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                return res.status(400).json({ error: 'Failed to upload profile picture' });
+            }
+        }
+        
         if (!user.isModified()) {
             return res.status(400).json({ error: 'No changes made to the profile' });
         }
+        
         await user.save();
-        res.status(200).json({ message: 'Profile updated successfully' });
+        res.status(200).json({ 
+            message: 'Profile updated successfully',
+            user: {
+                username: user.username,
+                email: user.email,
+                profilePicture: user.profilePicture
+            }
+        });
     } catch (error) {
         console.error('Error updating profile:', error);
         if (error.name === 'ValidationError') {

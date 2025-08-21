@@ -1,9 +1,10 @@
 import { Route, Routes } from 'react-router';
 import Navbar from './components/Navbar.jsx';
-import { Typography } from '@mui/material';
+import ErrorBanner from './components/ErrorBanner.jsx';
 import SignUp from './pages/SignUp.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import MyProfile from './pages/MyProfile.jsx';
 
 export default function AppRoutes() {
   return (
@@ -11,7 +12,8 @@ export default function AppRoutes() {
       <Route path="/" element={<Dashboard />} />
       <Route path="/register" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
-      <Route path="*" element={<><Navbar /><Typography sx={{ mt: 8, ml: 1 }} variant="h3">404: Page Not Found</Typography></>} />
+      <Route path="/profile" element={<MyProfile />} />
+      <Route path="*" element={<><Navbar /><ErrorBanner error={{ code: 404, message: 'Page Not Found' }} /></>} />
     </Routes>
   );
 }

@@ -7,8 +7,8 @@ export default function PasswordField({ id = 'password', value, onChange }) {
 
   return (
     <FormControl fullWidth sx={{ mt: 2 }}>
-      <FormLabel htmlFor={id}>Password</FormLabel>
-      <OutlinedInput
+      <FormLabel htmlFor={id} sx={{ fontSize: '1.25rem', fontWeight: { xs: 400, md: 500 }}}>Password</FormLabel>
+      <OutlinedInput sx={{ borderRadius: 0 }}
         id={id}
         type={show ? 'text' : 'password'}
         name={id}

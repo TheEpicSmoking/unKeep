@@ -39,7 +39,7 @@ export default function Login() {
         <FormField id="email" label="Email" autoComplete="email" placeholder="your@email.com" />      
         <FormField type="password" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />
         <ErrorLog errors={errors} />
-        <Button variant="contained" fullWidth onClick={handleSubmit} disabled={loading}>
+        <Button variant="contained" sx={{ borderRadius: 0 }} fullWidth onClick={handleSubmit} disabled={loading}>
           <Typography variant="button" sx={{ textTransform: 'none' }}>
             {loading ? 'Signing Up...' : 'Sign Up'}
           </Typography>

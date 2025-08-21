@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'
 import Close from '@mui/icons-material/Close'
 import Icon from './Icon'
 
-export default function AuthFormWrapper({ title, children }) {
+export default function AuthFormWrapper({ title, children, showLogo = true}) {
     const theme = useTheme();
     const navigate = useNavigate();
     return (
@@ -18,7 +18,7 @@ export default function AuthFormWrapper({ title, children }) {
                     >
                         <Close sx={{width: "4vw", height: "4vw", maxWidth:"25px", maxHeight:"25px"}}/>
                     </IconButton>
-                    <Icon sx={{ fontSize: '5vw', color: 'primary.main', mb: 2,}} align="center" />
+                    {showLogo && <Icon sx={{ fontSize: '5vw', color: 'primary.main', mb: 2,}} align="center" />}
                     <Typography variant="h4" component='h1' align="start" gutterBottom>
                         {title}
                     </Typography>
