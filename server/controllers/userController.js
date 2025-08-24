@@ -2,6 +2,8 @@ import User from '../models/userModel.js';
 import Note from '../models/noteModel.js';
 import NoteHistory from '../models/noteHistoryModel.js';
 import RefreshToken from '../models/refreshTokenModel.js';
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
 
 export const getUsers = async (req, res) => {
     try {
@@ -50,18 +52,22 @@ export const updateUserProfile = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+        if (!username || !email) {
+            return res.status(400).json({ error: 'Username and email can\'t be empty' });
+        }
+        user.username = username;
+        user.email = email;
         
-        // Update text fields if provided
-        if (username) user.username = username;
-        if (email) user.email = email;
-        
-        // Handle profile picture upload to Cloudinary if provided
         if (req.file) {
             try {
-                // Upload to Cloudinary
+                if (user.profilePicture) {
+                    const publicId = user.profilePicture.split('/').pop().split('.')[0];
+                    await cloudinary.uploader.destroy(`Avatars/${publicId}`);
+                }
+
                 const uploadPromise = new Promise((resolve, reject) => {
                     const uploadStream = cloudinary.uploader.upload_stream(
-                        { folder: 'profile_pictures' },
+                        { folder: 'Avatars' },
                         (error, result) => {
                             if (error) reject(error);
                             else resolve(result);

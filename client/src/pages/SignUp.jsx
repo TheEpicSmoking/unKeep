@@ -7,7 +7,7 @@ import AuthFormWrapper from '../components/AuthFormWrapper'
 import FormField from '../components/FormField'
 import ErrorLog from '../components/ErrorLog'
 
-export default function Login() {
+export default function SignUp() {
   const theme = useTheme()
   const { register } = useAuth()
   const navigate = useNavigate()

@@ -19,11 +19,9 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const register = async (username, email, password) => {
+  const register = async (email, userType) => {
     try {
-      let res = await api.post('auth/register', { username, email, password })
-      const emailOrUsername = email
-      res = await api.post('auth/login', { emailOrUsername, password })
+      let res = await api.post('auth/register', { email, userType })
       setAccessToken(res.data.accessToken)
       localStorage.setItem('accessToken', res.data.accessToken)
     } catch (error) {
@@ -65,6 +63,19 @@ export function AuthProvider({ children }) {
       return res.data.accessToken
     } catch (error) {
       logout()
+      throw error
+    }
+  }
+
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      const res = await api.post('auth/change-password', { currentPassword, newPassword }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
       throw error
     }
   }
@@ -123,16 +134,21 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const updateProfile = async ({ username, email, profilePicture }) => {
+  const updateProfile = async (data) => {
     try {
-      const res = await api.put('users/me', { username, email, profilePicture }, {
+      let config = {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
-      })
-      return res.data
+      };
+      let body = data;
+      if (data instanceof FormData) {
+        delete config.headers['Content-Type'];
+      }
+      const res = await api.put('users/me', body, config);
+      return res.data;
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
@@ -161,7 +177,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getUsers, getMyProfile, updateProfile, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getUsers, getMyProfile, updateProfile, changePassword, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )

@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import FormField from '../components/FormField';
 import AuthFormWrapper from '../components/AuthFormWrapper'
+import ErrorLog from '../components/ErrorLog';
 
 export default function MyProfile() {
   const { getMyProfile, updateProfile} = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
-  const [error, setErrors] = useState(null);
+  const [errors, setErrors] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
 
@@ -46,7 +47,7 @@ export default function MyProfile() {
         formData.append('username', username);
         formData.append('email', email);
         formData.append('avatar', avatarFile);
-        await updateProfile(formData, true); // true = isFormData
+        await updateProfile(formData);
       } else {
         await updateProfile({ username, email });
       }
@@ -59,7 +60,7 @@ export default function MyProfile() {
   }
 
   const handlePasswordClick = () => {
-    navigate('/change-password')
+    navigate('/me/change-password')
   }
 
   const handleAvatarChange = (event) => {
@@ -75,37 +76,35 @@ export default function MyProfile() {
   };
 
   return (
-    <>
-      <AuthFormWrapper title="My Profile" showLogo={false}>
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-          <ButtonBase component="label" tabIndex={-1} sx={{ pr: "20px", pb: "20px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <Avatar src={avatar} variant="square" sx={{ height: 265, width: 265, maxWidth: '100%', outline: 3, boxShadow: "20px 20px 0px 0px", outlineColor: 'primary.main', color: 'primary.main' }}/>
-              <input
-                type="file"
-                accept="image/*"
-                style={{
-                  border: 0,
-                  clip: 'rect(0 0 0 0)',
-                  height: '1px',
-                  margin: '-1px',
-                  overflow: 'hidden',
-                  padding: 0,
-                  position: 'absolute',
-                  whiteSpace: 'nowrap',
-                  width: '1px',
-                }}
-                onChange={handleAvatarChange}
-              />
-          </ButtonBase>
-          <Stack direction="column" sx={{ flex: 1, justifyContent: 'start-flex' }}>
-            <FormField id="username" label="Username" autoComplete="username" defaultValue={user?.username} sx={{borderRadius: 0, mt:0}}></FormField>
-            <FormField id="email" label="Email" autoComplete="email" defaultValue={user?.email}></FormField>
-            <FormLabel id="password" sx={{ fontSize: '1.25rem', fontWeight: { xs: 400, md: 500 }, mt:2}}>Password</FormLabel>
-            <Button variant="outlined" sx={{ borderRadius: 0, width: "100%", height: 56, justifyContent: 'start' }} onClick={handlePasswordClick} disabled={loading}>Change Password</Button>
-          </Stack>
+    <AuthFormWrapper title="My Profile" logo={false}>
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
+        <ButtonBase component="label" tabIndex={-1} sx={{ pr: "20px", pb: "20px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <Avatar src={avatar} variant="square" sx={{ height: 255, width: 255, maxWidth: '100%', outline: 3, boxShadow: "20px 20px 0px 0px", outlineColor: 'primary.main', color: 'primary.main' }}/>
+            <input
+              type="file"
+              accept="image/*"
+              style={{
+                border: 0,
+                clip: 'rect(0 0 0 0)',
+                height: '1px',
+                margin: '-1px',
+                overflow: 'hidden',
+                padding: 0,
+                position: 'absolute',
+                whiteSpace: 'nowrap',
+                width: '1px',
+              }}
+              onChange={handleAvatarChange}
+            />
+        </ButtonBase>
+        <Stack direction="column" sx={{ flex: 1, justifyContent: 'start-flex' }}>
+          <FormField id="username" label="Username" autoComplete="username" defaultValue={user?.username} sx={{borderRadius: 0, mt:0}}></FormField>
+          <FormField id="email" label="Email" autoComplete="email" defaultValue={user?.email}></FormField>
+          <Button variant="filled" sx={{ borderRadius: 0, mt:4, width: "100%", backgroundColor: 'primary.main', color: 'text.tertiary' }} onClick={handlePasswordClick} disabled={loading}>Change Password</Button>
         </Stack>
-        <Button variant="contained" sx={{ borderRadius: 0, mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Update Profile</Button>
-      </AuthFormWrapper>
-    </>
+      </Stack>
+      {errors && <ErrorLog errors={errors} sx={{ mb: 0 }} />}
+      <Button variant="contained" sx={{ borderRadius: 0, mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Update Profile</Button>
+    </AuthFormWrapper>
   );
 }

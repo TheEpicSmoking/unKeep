@@ -4,7 +4,7 @@ import PasswordField from './PasswordField'
 export default function FormField({ id, label, type = 'text', ...props }) {
     if (type === 'password') {
         return (
-        <PasswordField id={id} {...props} />
+        <PasswordField id={id} {...props} label={label} />
         )
   } else {
         return (
