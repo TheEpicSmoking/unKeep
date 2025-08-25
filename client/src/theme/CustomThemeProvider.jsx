@@ -1,5 +1,4 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 const theme = createTheme({
 	palette: {
@@ -30,6 +29,36 @@ const theme = createTheme({
 			textTransform: 'none',
 		},
 	},
+	components: {
+		MuiTooltip: {
+			styleOverrides: {
+				tooltip: {
+					backgroundColor: "#fbe23dff", // colore di sfondo
+					color: "#000000ff",           // testo
+					fontSize: "0.9rem",
+					borderRadius: 0,
+					outline: "3px solid #000000ff",
+					boxShadow: "5px 5px 0px 2px",
+				},
+			},
+		},
+		MuiPopover: {
+			styleOverrides: {
+				paper: {
+					borderRadius: 0,
+					boxShadow: "5px 5px 0px 2px",
+					outline: "3px solid #000000ff",
+				},
+			},
+		},
+		MuiButton: {
+			styleOverrides: {
+				root: {
+					borderRadius: 0,
+				},
+			},
+		},
+	}
 });
 
 export default function CustomThemeProvider({ children }) {

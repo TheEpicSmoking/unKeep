@@ -20,7 +20,7 @@ export default function Note({ children }) {
           max={5}
           variant="rounded"
           spacing={-12}>
-          <CustomAvatar src={children.author.profilePicture} alt={children.author.username} key={children.author._id} color={"white"} />
+          <CustomAvatar src={children.author.profilePicture} alt={children.author.username} key={children.author._id} color={"white"}/>
           {children.collaborators
             .filter(collaborator => collaborator.permission === 'write')
             .map((collaborator) => (

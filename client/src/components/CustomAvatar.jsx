@@ -1,34 +1,36 @@
 import { Avatar } from "@mui/material";
 import Logo from "./Logo";
 
-export default function CustomAvatar({ color, ...props }) {
+export default function CustomAvatar({ color, logoWidth="61%",...props }) {
 
 function stringToColor(string) {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
+  let hash = 0;
+  
+  for (let i = 0; i < string.length; i++) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
+  }
+  
+  const hue = hash % 360;
+  
+  const saturation = 85;
+  const lightness = 45;
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-return color;
+let username = "UnKeep";
+if (props.alt) {
+  username = props.alt;
 }
+
   return (
     <Avatar
+      {...props}
       sx={{
-        bgcolor: stringToColor(...props.alt),
+        bgcolor: stringToColor(username),
         ...props.sx,
       }}
-      {...props}
     >
-      <Logo sx={{ color: color, width: 24 }} variant="logomark" />
+      <Logo sx={{ color: color, width: logoWidth }} variant="logomark" />
     </Avatar>
   );
 }

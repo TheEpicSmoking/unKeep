@@ -1,7 +1,8 @@
 import { useAuth } from '../context/AuthContext';
-import { Stack, Avatar, Button, FormLabel, ButtonBase} from '@mui/material';
+import { Stack, Button, ButtonBase} from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import CustomAvatar from '../components/CustomAvatar.jsx';
 import FormField from '../components/FormField';
 import AuthFormWrapper from '../components/AuthFormWrapper'
 import ErrorLog from '../components/ErrorLog';
@@ -79,7 +80,7 @@ export default function MyProfile() {
     <AuthFormWrapper title="My Profile" logo={false}>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
         <ButtonBase component="label" tabIndex={-1} sx={{ pr: "20px", pb: "20px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <Avatar src={avatar} variant="square" sx={{ height: 255, width: 255, maxWidth: '100%', outline: 3, boxShadow: "20px 20px 0px 0px", outlineColor: 'primary.main', color: 'primary.main' }}/>
+          <CustomAvatar src={avatar} alt={user?.username} variant="square" color="white" sx={{ height: 255, width: 255, maxWidth: '100%', outline: 3, boxShadow: "20px 20px 0px 0px", outlineColor: 'primary.main', color: 'primary.main' }}/>
             <input
               type="file"
               accept="image/*"
