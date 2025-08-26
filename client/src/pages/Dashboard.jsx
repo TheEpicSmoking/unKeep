@@ -6,7 +6,7 @@ import AddNoteFab from '../components/AddNoteFab.jsx';
 import { useEffect, useState } from 'react';
 
 export default function Dashboard() {
-  const { createNote, getNotes, getUsers } = useAuth();
+  const { createNote, getNotes } = useAuth();
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)

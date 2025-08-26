@@ -34,7 +34,7 @@ export default function SignUp() {
   }
 
   return (
-      <AuthFormWrapper title="Sign Up">
+      <AuthFormWrapper title="Sign Up" onClose={() => navigate("/")}>
         <FormField id="username" label="Username" autoComplete="username" placeholder="Es. JohnDoe" />
         <FormField id="email" label="Email" autoComplete="email" placeholder="your@email.com" />      
         <FormField type="password" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />

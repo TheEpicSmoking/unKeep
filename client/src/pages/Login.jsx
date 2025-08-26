@@ -31,7 +31,7 @@ export default function Login() {
   }
 
   return (
-    <AuthFormWrapper title="Log In">
+    <AuthFormWrapper title="Log In" onClose={() => navigate("/")}>
       <FormField id="usernamemail" label="Email or Username" autoComplete="email" />
       <FormField type="password" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />
       <ErrorLog errors={errors} />

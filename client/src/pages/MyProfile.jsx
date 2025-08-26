@@ -1,11 +1,13 @@
 import { useAuth } from '../context/AuthContext';
-import { Stack, Button, ButtonBase} from '@mui/material';
+import { Stack, Button, ButtonBase, Box, IconButton} from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import CustomAvatar from '../components/CustomAvatar.jsx';
 import FormField from '../components/FormField';
 import AuthFormWrapper from '../components/AuthFormWrapper'
 import ErrorLog from '../components/ErrorLog';
+import Close from '@mui/icons-material/Close';
+
 
 export default function MyProfile() {
   const { getMyProfile, updateProfile} = useAuth();
@@ -33,6 +35,7 @@ export default function MyProfile() {
   }
   useEffect(() => {
     fetchProfile();
+    setErrors(null)
   }, []);
 
   const handleSubmit = async () => {
@@ -43,7 +46,9 @@ export default function MyProfile() {
     const email = document.getElementById('email').value
 
     try {
-      if (avatarFile) {
+      if (avatar === "remove") {
+        await updateProfile({ username, email, avatar: "remove" });
+      } else if (avatarFile) {
         const formData = new FormData();
         formData.append('username', username);
         formData.append('email', email);
@@ -77,27 +82,39 @@ export default function MyProfile() {
   };
 
   return (
-    <AuthFormWrapper title="My Profile" logo={false}>
+    <AuthFormWrapper title="My Profile" logo={false} onClose={() => navigate("/")}>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
-        <ButtonBase component="label" tabIndex={-1} sx={{ pr: "20px", pb: "20px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <CustomAvatar src={avatar} alt={user?.username} variant="square" color="white" sx={{ height: 255, width: 255, maxWidth: '100%', outline: 3, boxShadow: "20px 20px 0px 0px", outlineColor: 'primary.main', color: 'primary.main' }}/>
-            <input
-              type="file"
-              accept="image/*"
-              style={{
-                border: 0,
-                clip: 'rect(0 0 0 0)',
-                height: '1px',
-                margin: '-1px',
-                overflow: 'hidden',
-                padding: 0,
-                position: 'absolute',
-                whiteSpace: 'nowrap',
-                width: '1px',
-              }}
-              onChange={handleAvatarChange}
-            />
-        </ButtonBase>
+        <Box sx={{position: "relative"}}>
+        <IconButton
+          sx={{ position:"absolute", top: 3, right: 23, color: "black", zIndex: 1 }}
+          onClick={() => {
+            setAvatarFile("remove");
+            setAvatar("remove");
+          }}
+          aria-label="close"
+        >
+            <Close sx={{width: "4vw", height: "4vw", maxWidth:"25px", maxHeight:"25px"}}/>
+        </IconButton>
+          <ButtonBase component="label" tabIndex={-1} sx={{ pr: "20px", pb: "20px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <CustomAvatar src={avatar} alt={user?.username} variant="square" color="white" sx={{ height: 255, width: 255, maxWidth: '100%', outline: 3, boxShadow: "20px 20px 0px 0px", outlineColor: 'primary.main', color: 'primary.main' }}/>
+              <input
+                type="file"
+                accept="image/*"
+                style={{
+                  border: 0,
+                  clip: 'rect(0 0 0 0)',
+                  height: '1px',
+                  margin: '-1px',
+                  overflow: 'hidden',
+                  padding: 0,
+                  position: 'absolute',
+                  whiteSpace: 'nowrap',
+                  width: '1px',
+                }}
+                onChange={handleAvatarChange}
+              />
+          </ButtonBase>
+        </Box>
         <Stack direction="column" sx={{ flex: 1, justifyContent: 'start-flex' }}>
           <FormField id="username" label="Username" autoComplete="username" defaultValue={user?.username} sx={{borderRadius: 0, mt:0}}></FormField>
           <FormField id="email" label="Email" autoComplete="email" defaultValue={user?.email}></FormField>

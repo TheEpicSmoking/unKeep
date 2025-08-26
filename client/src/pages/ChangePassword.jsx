@@ -19,6 +19,9 @@ export default function ChangePassword() {
   async function handleSubmit() {
     try {
       setLoading(true);
+      if (!newPassword || !confirmPassword || !currentPassword) {
+        throw { response: { data: { message: "All fields are required" } } };
+      }
       if (newPassword !== confirmPassword) {
         throw { response: { data: { message: "Passwords do not match" } } };
       }
@@ -37,7 +40,7 @@ export default function ChangePassword() {
   }, [currentPassword, newPassword, confirmPassword]);
 
   return (
-    <AuthFormWrapper title="Change Password" logo={false} previous="/me">
+    <AuthFormWrapper title="Change Password" logo={false} onClose={() => navigate("/me")}>
         <FormField id="current-password" label="Current Password" type="password" autoComplete="current-password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
         <FormField id="new-password" label="New Password" type="password" autoComplete="new-password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
         <FormField id="confirm-password" label="Confirm Password" type="password" autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
