@@ -46,7 +46,7 @@ export default function MyProfile() {
     const email = document.getElementById('email').value
 
     try {
-      if (avatar === "remove") {
+      if (avatarFile === "remove") {
         await updateProfile({ username, email, avatar: "remove" });
       } else if (avatarFile) {
         const formData = new FormData();
@@ -85,16 +85,16 @@ export default function MyProfile() {
     <AuthFormWrapper title="My Profile" logo={false} onClose={() => navigate("/")}>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
         <Box sx={{position: "relative"}}>
-        <IconButton
-          sx={{ position:"absolute", top: 3, right: 23, color: "black", zIndex: 1 }}
+        {avatar && <IconButton
+          sx={{ position:"absolute", top: 3, right: {xs: 43, md: 23}, color: "black", zIndex: 1 }}
           onClick={() => {
             setAvatarFile("remove");
-            setAvatar("remove");
+            setAvatar("");
           }}
           aria-label="close"
         >
             <Close sx={{width: "4vw", height: "4vw", maxWidth:"25px", maxHeight:"25px"}}/>
-        </IconButton>
+        </IconButton>}
           <ButtonBase component="label" tabIndex={-1} sx={{ pr: "20px", pb: "20px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <CustomAvatar src={avatar} alt={user?.username} variant="square" color="white" sx={{ height: 255, width: 255, maxWidth: '100%', outline: 3, boxShadow: "20px 20px 0px 0px", outlineColor: 'primary.main', color: 'primary.main' }}/>
               <input

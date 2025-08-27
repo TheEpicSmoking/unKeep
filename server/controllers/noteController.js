@@ -23,7 +23,7 @@ export const createNote = async (req, res) => {
             delta: [dmp.patch_toText(dmp.patch_make("",title)), dmp.patch_toText(dmp.patch_make("",content))],
             baseVersion: 0
         });
-        res.status(201).json({message: "Note created successfully"});
+        res.status(201).json({message: "Note created successfully", id: note._id});
     } catch (error) {
         console.error('Error creating note:', error);
         if (error.name === 'ValidationError') {

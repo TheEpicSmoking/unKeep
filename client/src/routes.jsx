@@ -6,8 +6,9 @@ import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import MyProfile from './pages/MyProfile.jsx';
 import ChangePassword from './pages/ChangePassword.jsx';
+import NoteEdit from './pages/NoteEdit.jsx';
 
-export default function AppRoutes() {
+export default function AppRoutes({ socket }) {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
@@ -15,6 +16,7 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/me" element={<MyProfile />} />
       <Route path="/me/change-password" element={<ChangePassword />} />
+      <Route path="/notes/:id" element={<NoteEdit socket={socket} />} />
       <Route path="*" element={<><Navbar /><ErrorBanner error={{ code: 404, message: 'Page Not Found' }} /></>} />
     </Routes>
   );

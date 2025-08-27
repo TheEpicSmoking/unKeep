@@ -1,9 +1,7 @@
 import { Avatar } from "@mui/material";
 import Logo from "./Logo";
 
-export default function CustomAvatar({ color, logoWidth="61%",...props }) {
-
-function stringToColor(string) {
+export function stringToColor(string) {
   let hash = 0;
   
   for (let i = 0; i < string.length; i++) {
@@ -16,6 +14,8 @@ function stringToColor(string) {
   const lightness = 45;
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
+
+export default function CustomAvatar({ color, logoWidth="61%",...props }) {
 
 let username = "UnKeep";
 if (props.alt) {

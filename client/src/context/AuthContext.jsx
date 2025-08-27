@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router'
 import axios from 'axios'
 
 const AuthContext = createContext()
@@ -12,8 +11,6 @@ const api = axios.create({
 export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'))
   const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
-
   useEffect(() => {
     setupInterceptor()
     setLoading(false)
@@ -95,9 +92,48 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const createNote = async (title, content, collaborators, tags) => {
+  const getNote = async (id) => {
     try {
-      const res = await api.post('notes', { title, content, collaborators, tags }, {
+      const res = await api.get(`notes/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const updateNote = async (id, data) => {
+    try {
+      const res = await api.put(`notes/${id}`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const deleteNote = async (id) => {
+    try {
+      const res = await api.delete(`notes/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const createNote = async () => {
+    try {
+      const res = await api.post('notes', { title: "New Note", content: "", collaborators: [], tags: [] }, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -177,7 +213,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getUsers, getMyProfile, updateProfile, changePassword, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getNote, updateNote, deleteNote, getUsers, getMyProfile, updateProfile, changePassword, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )

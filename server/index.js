@@ -11,6 +11,7 @@ import noteRoutes from './routes/noteRoutes.js';
 import historyRoutes from './routes/historyRouter.js';
 import userRoutes from './routes/userRoutes.js';
 import { v2 as cloudinary } from 'cloudinary';
+import Delta from 'quill-delta';
 
 // Load environment variables
 config();
@@ -25,6 +26,53 @@ cloudinary.config({
 
 const app = express();
 const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: [ "http://192.168.1.168:5173", "http://unkeep:5173", "http://localhost:5173" ],
+        credentials: true
+    }
+});
+
+const notesDrafts = {};
+
+io.on("connection", (socket) => {
+    console.log("New user connected");
+
+    socket.on("join-note", (noteId) => {
+        socket.join(noteId);
+        if (notesDrafts[noteId]) {
+            console.log(`Loaded draft for note: ${noteId}`);
+            socket.emit("note-init", notesDrafts[noteId]);
+        }
+        console.log(`User joined note: ${noteId}`);
+    });
+
+    socket.on("identify", ({ userId }) => {
+        socket.data.user = userId;
+        console.log(`User identified: ${userId}`);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected");
+    });
+
+    socket.on("leave-note", (noteId) => {
+        socket.leave(noteId);
+        console.log(`User left note: ${noteId}`);
+    });
+
+    socket.on("note-change", (noteId, delta) => {
+        notesDrafts[noteId] = new Delta(notesDrafts[noteId]).compose(new Delta(delta));
+        console.log(`Created new draft ${notesDrafts[noteId]}`);
+        console.log(`Note changed: ${noteId}`, delta);
+        socket.to(noteId).emit("note-update", delta);
+    });
+
+    socket.on("cursor-change", (noteId, cursor, user) => {
+        console.log(`Cursor changed in note ${noteId} by user ${user._id}:`, cursor);
+        socket.to(noteId).emit("cursor-update", user, cursor);
+    });
+});
 
 // Middlewares
 app.use(cors(
