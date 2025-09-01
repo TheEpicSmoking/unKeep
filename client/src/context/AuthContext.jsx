@@ -16,9 +16,9 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const register = async (email, userType) => {
+  const register = async (username, email, password) => {
     try {
-      let res = await api.post('auth/register', { email, userType })
+      let res = await api.post('auth/register', { username, email, password })
       setAccessToken(res.data.accessToken)
       localStorage.setItem('accessToken', res.data.accessToken)
     } catch (error) {
@@ -105,9 +105,9 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const updateNote = async (id, data) => {
+  const updateNote = async (id, title, content) => {
     try {
-      const res = await api.put(`notes/${id}`, data, {
+      const res = await api.put(`notes/${id}`, { title, content }, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -188,6 +188,28 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const deleteProfile = async (migrateNotes) => {
+    try {
+      let res;
+      if (migrateNotes) {
+        res = await api.delete('users/me?migrateNotes=true', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+      } else {
+        res = await api.delete('users/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+      }
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
   const setupInterceptor = () => {
     api.interceptors.response.use(
       res => res,
@@ -213,7 +235,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getNote, updateNote, deleteNote, getUsers, getMyProfile, updateProfile, changePassword, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getNote, updateNote, deleteNote, getUsers, getMyProfile, updateProfile, deleteProfile, changePassword, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )

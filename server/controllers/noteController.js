@@ -74,7 +74,7 @@ export const getNoteById = async (req, res) => {
     }
 }
 
-export const updateNote = async (req, res) => {
+export const updateNote = async (req, res, io) => {
     try {
         const { title, content, collaborators, tags, author } = req.body;
         let currentNote = await Note.findById(req.params.id);
@@ -96,6 +96,8 @@ export const updateNote = async (req, res) => {
             return res.status(400).json({ error: 'No changes detected' });
         }
         if (currentNote.isModified('title') || currentNote.isModified('content')) {
+            io.to(req.params.id).emit("note-full-update", currentNote);
+            req.app.set('notesDrafts')[req.params.id] = null;
             const titleDiffs = dmp.diff_main(oldTitle, title);
             dmp.diff_cleanupSemantic(titleDiffs);
             const titlePatches = dmp.patch_make(oldTitle, titleDiffs);

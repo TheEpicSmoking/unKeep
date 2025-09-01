@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { Stack, Button, ButtonBase, Box, IconButton} from '@mui/material';
+import { Stack, Button, ButtonBase, Box, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Slide, FormControlLabel, Checkbox} from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import CustomAvatar from '../components/CustomAvatar.jsx';
@@ -10,13 +10,15 @@ import Close from '@mui/icons-material/Close';
 
 
 export default function MyProfile() {
-  const { getMyProfile, updateProfile} = useAuth();
+  const { getMyProfile, updateProfile, deleteProfile } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
   const [errors, setErrors] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [confirmUsername, setConfirmUsername] = useState("");
 
   const fetchProfile = async () => {
     setLoading(true)
@@ -81,15 +83,56 @@ export default function MyProfile() {
     }
   };
 
+  const handleAccountDelete = async () => {
+    setLoading(true);
+    try {
+      await deleteProfile(document.getElementById('migrateNotes').checked);
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      setErrors(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthFormWrapper title="My Profile" logo={false} onClose={() => navigate("/")}>
+      <Dialog
+        disableScrollLock
+        open={openDeleteDialog}
+        slots={{ transition: Slide }}
+        slotProps={{ paper: { sx: { boxShadow: "20px 20px 0px 0px", outline: 3, outlineColor: 'primary.main', borderRadius: 0}}}}
+      >
+        <DialogTitle>Delete your account</DialogTitle>
+        <DialogContent>
+          <IconButton
+                sx={{ position:"absolute", top: 5, right: 5, color: "text.primary" }}
+                onClick={() => setOpenDeleteDialog(false)}
+                aria-label="close"
+            >
+                <Close sx={{width: "4vw", height: "4vw", maxWidth:"25px", maxHeight:"25px"}}/>
+          </IconButton>
+          <DialogContentText sx={{fontSize: '1.4rem'}}>
+            Your data will be permanently deleted. What happens to your notes depends on the option below:
+          </DialogContentText>
+          <FormControlLabel control={<Checkbox defaultChecked id="migrateNotes"/>} label="Give ownership of each note to its first collaborator (if any)." />
+          <DialogContentText sx={{ color: 'text.hint', pl:"30px" }}>
+            If unchecked, all your notes will be deleted.
+          </DialogContentText>
+          <FormField label="To confirm, please type your username." placeholder={user?.username} onChange={(e) => setConfirmUsername(e.target.value)}></FormField>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAccountDelete} sx={{ color: 'error.main' }} disabled={confirmUsername !== user?.username}>Delete Account</Button>
+        </DialogActions>
+      </Dialog>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
         <Box sx={{position: "relative"}}>
         {avatar && <IconButton
-          sx={{ position:"absolute", top: 3, right: {xs: 43, md: 23}, color: "black", zIndex: 1 }}
+          sx={{ position:"absolute", top: 3, right: {xs: 43, md: 23}, color: "black", zIndex: 1, bgcolor: "rgba(255, 255, 255, 0.1)", '&:hover': { bgcolor: "rgba(255, 255, 255, 0.2)"} }}
           onClick={() => {
             setAvatarFile("remove");
-            setAvatar("");
+            setAvatar("");3
           }}
           aria-label="close"
         >
@@ -118,7 +161,10 @@ export default function MyProfile() {
         <Stack direction="column" sx={{ flex: 1, justifyContent: 'start-flex' }}>
           <FormField id="username" label="Username" autoComplete="username" defaultValue={user?.username} sx={{borderRadius: 0, mt:0}}></FormField>
           <FormField id="email" label="Email" autoComplete="email" defaultValue={user?.email}></FormField>
+          <Stack spacing={2} direction="row" sx={{mt:4}}>
           <Button variant="filled" sx={{ borderRadius: 0, mt:4, width: "100%", backgroundColor: 'primary.main', color: 'text.tertiary' }} onClick={handlePasswordClick} disabled={loading}>Change Password</Button>
+          <Button variant="filled" sx={{ borderRadius: 0, mt:4, width: "100%", backgroundColor: 'error.main', color: 'text.tertiary'}} onClick={() => {setOpenDeleteDialog(true)}} disabled={loading}>Delete Account</Button>
+          </Stack>
         </Stack>
       </Stack>
       {errors && <ErrorLog errors={errors} sx={{ mb: 0 }} />}

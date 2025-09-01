@@ -34,6 +34,9 @@ const io = new Server(server, {
 });
 
 const notesDrafts = {};
+const cursorsState = {};
+
+app.set('notesDrafts', notesDrafts);
 
 io.on("connection", (socket) => {
     console.log("New user connected");
@@ -42,14 +45,25 @@ io.on("connection", (socket) => {
         socket.join(noteId);
         if (notesDrafts[noteId]) {
             console.log(`Loaded draft for note: ${noteId}`);
-            socket.emit("note-init", notesDrafts[noteId]);
+            socket.emit("note-init", notesDrafts[noteId], (cursorsState[noteId] || {}));
         }
+        io.to(noteId).emit("user-count", io.sockets.adapter.rooms.get(noteId)?.size || 0);
         console.log(`User joined note: ${noteId}`);
     });
 
     socket.on("identify", ({ userId }) => {
         socket.data.user = userId;
         console.log(`User identified: ${userId}`);
+    });
+
+    socket.on("disconnecting", () => {
+        for (const room of socket.rooms) {
+            if (room !== socket.id) {
+                const size = (io.sockets.adapter.rooms.get(room)?.size || 1) - 1;
+                socket.to(room).emit("cursor-remove", { userId: socket.data.user });
+                io.to(room).emit("user-count", size);
+            }
+        }
     });
 
     socket.on("disconnect", () => {
@@ -70,6 +84,10 @@ io.on("connection", (socket) => {
 
     socket.on("cursor-change", (noteId, cursor, user) => {
         console.log(`Cursor changed in note ${noteId} by user ${user._id}:`, cursor);
+        if (!cursorsState[noteId]) cursorsState[noteId] = {};
+        if (user._id) {
+            cursorsState[noteId][user._id] = { user: user, range: cursor };
+        }
         socket.to(noteId).emit("cursor-update", user, cursor);
     });
 });
@@ -105,6 +123,6 @@ mongoose.connect(MONGO_URI).then(() => {
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/notes', noteRoutes);
+app.use('/api/notes', noteRoutes(io));
 app.use('/api/history', historyRoutes);
 app.use('/api/users', userRoutes);

@@ -125,9 +125,13 @@ export const deleteUser = async (req, res) => {
         for (let note of Notes) {
             if (note.collaborators && typeof req.query.migrateNotes !== 'undefined') {
             {
-                note.author = note.collaborators[0].user;
-                note.collaborators.shift();
-                await Note.findByIdAndUpdate(note._id, note);
+                for (let collaborator of note.collaborators) {
+                    collaborator.user.permission = 'write';
+                    note.author = collaborator.user;
+                    note.collaborators = note.collaborators.filter(c => c.user !== collaborator.user);
+                    await Note.findByIdAndUpdate(note._id, note);
+                    return;
+                }
             }
         }
             else await Note.findByIdAndDelete(note._id);
