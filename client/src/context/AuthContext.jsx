@@ -118,6 +118,19 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const updateNoteSettings = async (id, collaborators, tags) => {
+    try {
+      const res = await api.put(`notes/${id}`, { collaborators, tags }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
   const deleteNote = async (id) => {
     try {
       const res = await api.delete(`notes/${id}`, {
@@ -235,7 +248,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getNote, updateNote, deleteNote, getUsers, getMyProfile, updateProfile, deleteProfile, changePassword, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getNote, updateNote, updateNoteSettings, deleteNote, getUsers, getMyProfile, updateProfile, deleteProfile, changePassword, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )
