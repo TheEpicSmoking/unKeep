@@ -157,11 +157,14 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const getUsers = async (id) => {
+  const getUsers = async (query) => {
     try {
-      const res = await api.get(`users/${id}`, {
+      const res = await api.get(`users/`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
+        },
+        params: {
+          q: query
         }
       })
       return res.data

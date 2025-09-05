@@ -168,7 +168,7 @@ export default function MyProfile() {
         </Stack>
       </Stack>
       {errors && <ErrorLog errors={errors} sx={{ mb: 0 }} />}
-      <Button variant="contained" sx={{ borderRadius: 0, mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Update Profile</Button>
+      <Button variant="contained" sx={{ borderRadius: 0, mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Save Changes</Button>
     </AuthFormWrapper>
   );
 }

@@ -1,6 +1,5 @@
 import { Box, Button, Stack, TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Slide, IconButton} from "@mui/material";
 import { Close } from "@mui/icons-material";
-import AuthFormWrapper from "../components/AuthFormWrapper.jsx";
 import { useParams } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -137,6 +136,12 @@ export default function NoteEdit({ socket }) {
 
     return () => {
       editorRef.current.root.removeEventListener("focusout", () => {});
+      socket.off("note-init");
+      socket.off("note-update");
+      socket.off("cursor-update");
+      socket.off("note-full-update");
+      socket.off("user-count");
+      socket.off("disconnect");
     }
 
     }, [user, note]);

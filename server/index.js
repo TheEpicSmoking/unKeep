@@ -56,21 +56,24 @@ io.on("connection", (socket) => {
         console.log(`User identified: ${userId}`);
     });
 
-    socket.on("disconnecting", () => {
-        for (const room of socket.rooms) {
-            if (room !== socket.id) {
-                const size = (io.sockets.adapter.rooms.get(room)?.size || 1) - 1;
-                socket.to(room).emit("cursor-remove", { userId: socket.data.user });
-                io.to(room).emit("user-count", size);
-            }
-        }
-    });
-
     socket.on("disconnect", () => {
         console.log("User disconnected");
     });
 
     socket.on("leave-note", (noteId) => {
+        for (const room of socket.rooms) {
+            if (room !== socket.id) {
+                const size = (io.sockets.adapter.rooms.get(room)?.size || 1) - 1;
+                if (size === 0 && notesDrafts[room]) {
+                    notesDrafts[room] = null;
+                    console.log(`Cleared draft for note: ${room}`);
+                }
+                else{
+                    socket.to(room).emit("cursor-remove", { userId: socket.data.user });
+                    io.to(room).emit("user-count", size);
+                }
+            }
+        }
         socket.leave(noteId);
         console.log(`User left note: ${noteId}`);
     });

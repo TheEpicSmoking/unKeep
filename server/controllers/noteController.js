@@ -58,8 +58,8 @@ export const getNotes = async (req, res) => {
 export const getNoteById = async (req, res) => {
     try {
         const note = await Note.findById(req.params.id)
-            .populate('author', 'username')
-            .populate('collaborators.user', 'username');
+            .populate('author', 'username profilePicture')
+            .populate('collaborators.user', 'username profilePicture');
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }

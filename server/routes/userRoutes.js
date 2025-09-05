@@ -7,13 +7,12 @@ import multer from 'multer';
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const profileRouter = express.Router();
-profileRouter.get('/', verifyToken, getUserProfile);
-profileRouter.put('/', verifyToken, upload.single('avatar'), updateUserProfile);
-profileRouter.delete('/', verifyToken, deleteUser);
+const router = express.Router();
 
-const router = profileRouter.use('/me', profileRouter);
 router.get('/', verifyToken, getUsers);
+router.get('/me', verifyToken, getUserProfile);
+router.put('/me', verifyToken, upload.single('avatar'), updateUserProfile);
+router.delete('/me', verifyToken, deleteUser);
 router.get('/:id', verifyToken, getUser);
 
 export default router;
