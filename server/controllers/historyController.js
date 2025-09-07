@@ -123,6 +123,29 @@ export const revertNote = async (req, res) => {
     }
 }
 
+export const rebase = async (note, version, hardRebase=false) => {
+    try {
+        const newRoot = await NoteHistory.findOne({ noteId: note._id, baseVersion: version });
+        if (hardRebase) {
+            newRoot.createdBy = note.author;
+        }
+        const patchedNote = await patch(note._id, version);
+        newRoot.delta = [dmp.patch_toText(dmp.patch_make("",patchedNote.title)), dmp.patch_toText(dmp.patch_make("",patchedNote.content))];
+        newRoot.baseVersion = 0;
+        await NoteHistory.deleteMany({ noteId: note._id, baseVersion: { $lt: version } });
+        await newRoot.save();
+        const otherPatches = await NoteHistory.find({ noteId: note._id, baseVersion: { $gt: version } });
+        for (const patch of otherPatches) {
+            patch.baseVersion = otherPatches.indexOf(patch) + 1;
+            await patch.save();
+        }
+        note.currentVersion = otherPatches.length;
+        console.log("Rebased note to version", version, "new current version is", note.currentVersion);
+    } catch (error) {
+        console.error('Error rebasing note:', error);
+    }   
+}
+
 export const rebaseNote = async (req, res) => {
     try {
         const noteId = req.params.id;
@@ -134,24 +157,10 @@ export const rebaseNote = async (req, res) => {
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
-        const newRoot = await NoteHistory.findOne({ noteId, baseVersion: version });
-        if (!newRoot) {
-            return res.status(404).json({ error: 'Version not found' });
-        }
         if (!note.author.equals(req.userId)) {
             return res.status(403).json({ error: 'You do not have permission to rebase this note' });
         }
-        const patchedNote = await patch(noteId, version);
-        newRoot.delta = [dmp.patch_toText(dmp.patch_make("",patchedNote.title)), dmp.patch_toText(dmp.patch_make("",patchedNote.content))];
-        newRoot.baseVersion = 0;
-        await NoteHistory.deleteMany({ noteId, baseVersion: { $lt: version } });
-        await newRoot.save();
-        const otherPatches = await NoteHistory.find({ noteId, baseVersion: { $gt: version } });
-        for (const patch of otherPatches) {
-            patch.baseVersion = otherPatches.indexOf(patch) + 1;
-            await patch.save();
-        }
-        note.currentVersion = otherPatches.length;
+        await rebase(note, version);
         await note.save();
         res.status(200).json({message: "Note rebased successfully", version: note.currentVersion});
     }

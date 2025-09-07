@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
-import { Modal, Popper, List, ListItemText, ListItemButton, Paper, Stack, Button, OutlinedInput, Box, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Slide, Chip, Tab, Typography, Switch} from '@mui/material';
-import {  TabContext, TabList, TabPanel } from '@mui/lab'; 
+import { Modal, Popper, List, ListItemText, ListItemButton, Stack, Button, OutlinedInput, Box, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Slide, Chip, Tab, Typography, Switch} from '@mui/material';
+import {  TabContext, TabList, TabPanel, Timeline, TimelineItem, TimelineConnector, TimelineSeparator, TimelineContent, TimelineDot, TimelineOppositeContent } from '@mui/lab'; 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomAvatar from '../components/CustomAvatar.jsx';
@@ -13,9 +13,10 @@ import AddIcon from '@mui/icons-material/Add';
 
 
 export default function MyProfile() {
-  const { getNote, updateNoteSettings, getUsers } = useAuth();
+  const { getNote, updateNoteSettings, getUsers, getNoteHistory, getNoteVersion, revertNoteToVersion, rebaseNoteToVersion } = useAuth();
   const [loading, setLoading] = useState(true);
   const [userLoading, setUserLoading] = useState(false);
+  const [noteLoading, setNoteLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const [note, setNote] = useState(null);
@@ -26,19 +27,30 @@ export default function MyProfile() {
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
   const [collaborators, setCollaborators] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [openUser, setOpenUser] = useState(false);
   const [user, setUser] = useState(null);
   const [collaboratorQuery, setCollaboratorQuery] = useState("");
   const [userList, setUserList] = useState([]);
   const [focused, setFocused] = useState(false);
+  const [noteHistory, setNoteHistory] = useState([]);
+  const [openCommit, setOpenCommit] = useState(false);
+  const [commit, setCommit] = useState(null);
   const anchorElRef = useRef(null);
 
-  const handleOpen = (user) => {
+  const handleOpenUser = (user) => {
     setUser(user);
-    setOpen(true);
+    setOpenUser(true);
   };
-  const handleClose = () => setOpen(false);
+  const handleCloseUser = () => setOpenUser(false);
 
+  const handleOpenCommit = async (v) => {
+    setNoteLoading(true);
+    const commit = await getNoteVersion(id, v);
+    setCommit(commit);
+    setOpenCommit(true);
+    setNoteLoading(false);
+  };
+  const handleCloseCommit = () => setOpenCommit(false);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -56,9 +68,38 @@ export default function MyProfile() {
     setTags(tags.filter((tag) => tag !== tagToDelete));
   };
 
+  const fetchNoteHistory = async () => {
+    try {
+      const history = await getNoteHistory(id);
+      setNoteHistory(history);
+    } catch (error) {
+      console.error('Failed to fetch note history:', error);
+      setNoteHistory([]);
+    }
+  }
+
+  const revertToVersion = async (versionId) => {
+    try {
+      await revertNoteToVersion(id, versionId);
+      fetchNoteHistory();
+    } catch (error) {
+      console.error('Failed to revert note to version:', error);
+    }
+  };
+
+  const rebaseToVersion = async (versionId) => {
+    try {
+      await rebaseNoteToVersion(id, versionId);
+      fetchNoteHistory();
+    } catch (error) {
+      console.error('Failed to rebase note to version:', error);
+    }
+  };
+
   const fetchNote = async () => {
     setLoading(true);
     try {
+      fetchNoteHistory();
       const fetchedNote = await getNote(id);
       setNote(fetchedNote);
     } catch (error) {
@@ -69,6 +110,7 @@ export default function MyProfile() {
       setLoading(false)
     }
   }
+
   const fetchUsers = async (query) => {
     try {
       setUserLoading(true);
@@ -84,10 +126,9 @@ export default function MyProfile() {
     }
   }
 
-
   useEffect(() => {
     fetchNote();
-    setErrors(null)
+    setErrors(null);
   }, []);
 
   useEffect(() => {
@@ -139,10 +180,30 @@ export default function MyProfile() {
     <>
     <Modal
       disableScrollLock
-      open={open}
+      open={openUser}
     >
-      <AuthFormWrapper title={user?.username} onClose={handleClose} logo={false} sx={{ width: 400, height: 450, pb: 9 }}>
+      <AuthFormWrapper title={user?.username} onClose={handleCloseUser} logo={false} sx={{ width: 400, height: 450, pb: 9 }}>
         <CustomAvatar variant="rounded" src={user?.profilePicture} alt={user?.username} key={user?._id + "_2"} color={"white"} sx={{ border: 0, outline: 3, outlineColor: 'primary.main', color: 'primary.main', width: "100%", height: "100%", borderRadius: 10 }} />
+      </AuthFormWrapper>
+    </Modal>
+    <Modal
+      disableScrollLock
+      open={openCommit}
+    >
+      <AuthFormWrapper title={noteLoading ? "Loading..." : commit?.currentVersion} onClose={handleCloseCommit} logo={false} sx={{ display: "flex", flexDirection: "column", gap: 2, width: "95%", height: "80%", pb: 9 }}>
+        {noteLoading ? <Typography>Loading...</Typography> : (
+          <>
+            <Typography variant="subtitle2" align="left" sx={{ color: 'text.disabled', pb: 2}}>
+              {new Date(commit?.updatedAt).toLocaleString()}
+            </Typography>
+            <Box sx={{ overflowY: 'auto', height: '100%', border: "1px solid rgb(0, 0, 0)", p: 2 }}>
+              <Typography variant="h6" sx={{ pb: 2 }}>{commit?.title}</Typography>
+              <Typography variant="body2" color="text.primary">{commit?.content}</Typography>
+            </Box>
+            <Button onClick={() => revertToVersion(commit?.currentVersion)} disabled={noteLoading && commit?.currentVersion === note?.currentVersion} sx={{bgcolor: 'primary.main', color: "text.tertiary"}}> Revert to this version </Button>
+            <Button onClick={() => rebaseToVersion(commit?.currentVersion)} disabled={noteLoading && commit?.currentVersion === 0} sx={{bgcolor: 'primary.main', color: "text.tertiary"}}> Rebase to this version </Button>
+          </>
+        )}
       </AuthFormWrapper>
     </Modal>
     <AuthFormWrapper title="Note Settings" logo={false} onClose={() => navigate("/")} sx={{ height: {xs:'80%', md: '50%'},  display: "flex", flexDirection: "column" }}>
@@ -178,9 +239,30 @@ export default function MyProfile() {
           <Tab label="Note History" sx={{ textTransform: 'none', fontSize: {xs: '0.9rem', md: '1.2rem' } }} value="1"/>
           <Tab label="Collaborators" sx={{ textTransform: 'none', fontSize: { xs: '0.9rem', md: '1.2rem' } }} value="2"/>
           <Tab label="Tags" sx={{fontSize: { xs: '0.9rem', md: '1.2rem' } }} value="3"/>
-
         </TabList>
-        <TabPanel value="1" sx={{p:0, pt:2}}>
+        <TabPanel value="1" sx={{p:0, pt:2, minHeight:0, gap:2, height:'100%',flexDirection: 'column', display: (tabValue === "1" ? 'flex' : 'none')}}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignContent: 'flex-start', overflowY: 'auto', gap: 2, width: '100%', height: '100%', border: "1px solid rgb(0, 0, 0)", p: 2 }}>
+              <Timeline position="right">
+                {noteHistory.map((historyItem, index) => (
+                  <TimelineItem key={index}>
+                    <TimelineOppositeContent>
+                      <Typography variant="body2" color="text.disabled"  onClick={() => handleOpenCommit(noteHistory.length-(index+1))} sx={{cursor: "pointer", pr: {xs:0, md:2}, textAlign: 'right' }}>
+                        {new Date(historyItem.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' })}
+                      </Typography>
+                    </TimelineOppositeContent>
+                    <TimelineSeparator>
+                      <TimelineDot variant="outlined" onClick={() => handleOpenCommit(noteHistory.length-(index+1))} sx={{cursor: "pointer", borderColor: "primary.main", bgcolor: stringToColor(historyItem.createdBy.username), borderRadius: 0 }} />
+                      {index < noteHistory.length - 1 && <TimelineConnector sx={{ bgcolor: "primary.main" }} />}
+                    </TimelineSeparator>
+                  <TimelineContent>
+                    <Typography variant="body2" color="text.primary"  onClick={() => handleOpenCommit(noteHistory.length-(index+1))} sx={{cursor: "pointer", pl: {xs:0, md:2}}}>
+                      {index === noteHistory.length - 1 ? `Created by ${historyItem.createdBy.username}` : `updated by ${historyItem.createdBy.username}`}
+                    </Typography>
+                  </TimelineContent>
+                </TimelineItem>
+              ))}
+            </Timeline>
+          </Box>
         </TabPanel>
         <TabPanel value="2" sx={{p:0, pt:2, minHeight:0, gap:2, height:'100%',flexDirection: 'column', display: (tabValue === "2" ? 'flex' : 'none')}}>
           <OutlinedInput placeholder="Add a collaborator" value={collaboratorQuery} sx={{borderRadius: 0, width: '100%' }} onChange={(e) => setCollaboratorQuery(e.target.value)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} ref={anchorElRef} />
@@ -201,7 +283,7 @@ export default function MyProfile() {
           <Stack sx={{ overflowY: 'auto', width: '100%', height: '100%', border: "1px solid rgb(0, 0, 0)" }}>
             {collaborators.map((collaborator) => (
               <Box key={collaborator.user._id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, borderBottom: '1px solid rgb(0, 0, 0)' }}>
-                <CustomAvatar key={collaborator.user._id} src={collaborator.user.profilePicture} alt={collaborator.user.username} color={"white"} variant="rounded" onClick={() => handleOpen(collaborator.user)} sx={{border: 0, outline: 3,boxShadow: "3px 3px 0px 3px", outlineColor: 'primary.main', color: 'primary.main', cursor:"pointer"}}/>
+                <CustomAvatar key={collaborator.user._id} src={collaborator.user.profilePicture} alt={collaborator.user.username} color={"white"} variant="rounded" onClick={() => handleOpenUser(collaborator.user)} sx={{border: 0, outline: 3,boxShadow: "3px 3px 0px 3px", outlineColor: 'primary.main', color: 'primary.main', cursor:"pointer"}}/>
                 <Typography noWrap sx={{ pl: 2 }}>{collaborator.user.username}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Switch
@@ -222,7 +304,7 @@ export default function MyProfile() {
                       }}
                   />
                 <Button variant="contained" color="error" sx={{ borderRadius: 0, boxShadow: 0 }} onClick={() => setCollaborators(collaborators.filter((c) => c.user._id !== collaborator.user._id))}>Remove</Button>
-              </Box>
+                </Box>
               </Box>
             ))}
           </Stack>

@@ -2,6 +2,7 @@ import User from '../models/userModel.js';
 import Note from '../models/noteModel.js';
 import NoteHistory from '../models/noteHistoryModel.js';
 import RefreshToken from '../models/refreshTokenModel.js';
+import { rebase } from './historyController.js';
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 
@@ -138,7 +139,6 @@ export const deleteUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        await NoteHistory.deleteMany({ noteId: { $in: Notes.map(note => note._id) } });
         for (let note of Notes) {
             if (note.collaborators && typeof req.query.migrateNotes !== 'undefined') {
             {
@@ -146,12 +146,17 @@ export const deleteUser = async (req, res) => {
                     collaborator.user.permission = 'write';
                     note.author = collaborator.user;
                     note.collaborators = note.collaborators.filter(c => c.user !== collaborator.user);
+                    rebase(note, note.currentVersion, true);
+                    note.currentVersion = 0;
                     await Note.findByIdAndUpdate(note._id, note);
                     return;
                 }
             }
         }
-            else await Note.findByIdAndDelete(note._id);
+            else {
+                await NoteHistory.deleteMany({ noteId: { $in: Notes.map(note => note._id) } });
+                await Note.findByIdAndDelete(note._id);
+            }
         }
         await Note.updateMany({ "collaborators.user": req.userId }, { $pull: { collaborators: { user: req.userId } } });
         res.clearCookie('refreshToken', {

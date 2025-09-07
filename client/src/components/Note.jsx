@@ -54,7 +54,6 @@ export default function Note({ children }) {
       <CardContent onClick={() => (navigate(`/notes/${children._id}`))} sx={{ cursor: "pointer" }}>
         <Typography variant="h6" sm="h7" sx={{overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "2", WebkitBoxOrient: "vertical"}}>{children.title}</Typography>
         <Typography variant="body2" sx={{overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "8", WebkitBoxOrient: "vertical"}}>{children.content}</Typography>
-          
         <Typography variant="subtitle2" align="left" sx={{ color: 'text.disabled', pt: 0}}>
           {`Last updated: ${new Date(children.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' })}`}
         </Typography>

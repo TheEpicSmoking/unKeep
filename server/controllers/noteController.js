@@ -17,12 +17,6 @@ export const createNote = async (req, res) => {
             collaborators: collaborators || [],
             tags: tags || [],
         });
-        await NoteHistory.create({
-            noteId: note.id,
-            createdBy: req.userId,
-            delta: [dmp.patch_toText(dmp.patch_make("",title)), dmp.patch_toText(dmp.patch_make("",content))],
-            baseVersion: 0
-        });
         res.status(201).json({message: "Note created successfully", id: note._id});
     } catch (error) {
         console.error('Error creating note:', error);
@@ -36,7 +30,7 @@ export const createNote = async (req, res) => {
 
 export const getNotes = async (req, res) => {
     try {
-        const notes = await Note.find({
+        let notes = await Note.find({
             $or: [
                 { author: req.userId },
                 { "collaborators.user": req.userId }
@@ -45,10 +39,25 @@ export const getNotes = async (req, res) => {
             .populate('author', 'username profilePicture')
             .populate('collaborators.user', 'username profilePicture')
             .sort({ createdAt: -1 });
+
         if (!notes || notes.length === 0) {
             return res.status(404).json({ error: 'No notes found' });
         }
-        res.status(200).json(notes);
+
+        const filteredNotes = [];
+        for (const note of notes) {
+            const lastHistory = await NoteHistory.findOne({ noteId: note.id });
+            if (lastHistory) {
+                filteredNotes.push(note);
+            } else {
+                await Note.deleteOne({ _id: note.id });
+            }
+        }
+;
+        if (filteredNotes.length === 0) {
+            return res.status(404).json({ error: 'No notes found' });
+        }
+        res.status(200).json(filteredNotes);
     } catch (error) {
         console.error('Error fetching notes:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -77,6 +86,7 @@ export const getNoteById = async (req, res) => {
 export const updateNote = async (req, res, io) => {
     try {
         const { title, content, collaborators, tags, author } = req.body;
+        let historyCreated = false;
         let currentNote = await Note.findById(req.params.id);
         if (!currentNote) {
             return res.status(404).json({ error: 'Note not found' });
@@ -92,10 +102,21 @@ export const updateNote = async (req, res, io) => {
         currentNote.collaborators = collaborators || currentNote.collaborators;
         currentNote.tags = tags || currentNote.tags;
         currentNote.author = author || currentNote.author;
+        let lastHistory = null;
+        lastHistory = await NoteHistory.findOne({ noteId: req.params.id });
+        if (!lastHistory) {
+            await NoteHistory.create({
+                noteId: currentNote.id,
+                createdBy: req.userId,
+                delta: [dmp.patch_toText(dmp.patch_make("", title)), dmp.patch_toText(dmp.patch_make("", content))],
+                baseVersion: 0
+            });
+            historyCreated = true;
+        }
         if (!currentNote.isModified()) {
             return res.status(400).json({ error: 'No changes detected' });
         }
-        if (currentNote.isModified('title') || currentNote.isModified('content')) {
+        if ((currentNote.isModified('title') || currentNote.isModified('content')) && !historyCreated) {
             io.to(req.params.id).emit("note-full-update", currentNote);
             req.app.set('notesDrafts')[req.params.id] = null;
             const titleDiffs = dmp.diff_main(oldTitle, title);

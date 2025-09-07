@@ -24,9 +24,9 @@ export default function NoteEdit({ socket }) {
     const controlledNavigate = useControlledNavigation(userCount === 1 && unsaved);
 
     const handleSave = () => {
-      const title = document.getElementById("noteTitle")?.value || "";
+      const title = document.getElementById("noteTitle")?.value || note.title;
       const content = editorRef.current.getText();
-      console.log(content)
+      console.log(content);
       updateNote(id, title, content);
       setUnsaved(false);
     };

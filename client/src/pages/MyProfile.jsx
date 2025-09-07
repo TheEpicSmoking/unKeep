@@ -116,7 +116,7 @@ export default function MyProfile() {
           <DialogContentText sx={{fontSize: '1.4rem'}}>
             Your data will be permanently deleted. What happens to your notes depends on the option below:
           </DialogContentText>
-          <FormControlLabel control={<Checkbox defaultChecked id="migrateNotes"/>} label="Give ownership of each note to its first collaborator (if any)." />
+          <FormControlLabel control={<Checkbox defaultChecked id="migrateNotes"/>} label={`Give ownership of each note to its first collaborator if any. Be careful, note history will be lost.`} />
           <DialogContentText sx={{ color: 'text.hint', pl:"30px" }}>
             If unchecked, all your notes will be deleted.
           </DialogContentText>

@@ -107,11 +107,19 @@ export function AuthProvider({ children }) {
 
   const updateNote = async (id, title, content) => {
     try {
+      if (title === null){
+        const res = await api.put(`notes/${id}`, { content }, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+        return res.data
+      } else {
       const res = await api.put(`notes/${id}`, { title, content }, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
-      })
+      })}
       return res.data
     } catch (error) {
       throw error
@@ -226,6 +234,58 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const getNoteHistory = async (id) => {
+    try {
+      const res = await api.get(`/history/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const getNoteVersion = async (noteId, versionId) => {
+    try {
+      const res = await api.get(`/history/${noteId}/${versionId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const revertNoteToVersion = async (noteId, versionId) => {
+    try {
+      const res = await api.post(`/history/${noteId}/revert/${versionId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const rebaseNoteToVersion = async (noteId, versionId) => {
+    try {
+      const res = await api.post(`/history/${noteId}/rebase/${versionId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
   const setupInterceptor = () => {
     api.interceptors.response.use(
       res => res,
@@ -251,7 +311,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getNote, updateNote, updateNoteSettings, deleteNote, getUsers, getMyProfile, updateProfile, deleteProfile, changePassword, accessToken, loading, api }}>
+    <AuthContext.Provider value={{ login, logout, register, createNote, getNotes, getNote, updateNote, updateNoteSettings, deleteNote, getNoteHistory, getNoteVersion, revertNoteToVersion, rebaseNoteToVersion, getUsers, getMyProfile, updateProfile, deleteProfile, changePassword, accessToken, loading, api }}>
       {children}
     </AuthContext.Provider>
   )
