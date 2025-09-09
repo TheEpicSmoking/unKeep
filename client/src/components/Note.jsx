@@ -1,11 +1,11 @@
-import { Card, Typography, CardContent, CardHeader, Divider, Modal, AvatarGroup, Stack, IconButton, Slide, Popover, ButtonGroup, Button} from '@mui/material';
+import { Card, Typography, CardContent, CardHeader, Divider, Modal, AvatarGroup, Stack, IconButton} from '@mui/material';
 import TuneSharpIcon from '@mui/icons-material/TuneSharp';
 import AuthFormWrapper from './AuthFormWrapper.jsx';
 import CustomAvatar from './CustomAvatar.jsx';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-export default function Note({ children }) {
+export default function Note({ children, profile}) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function Note({ children }) {
             <CustomAvatar key={collaborator.user._id} src={collaborator.user.profilePicture} alt={collaborator.user.username} color={"white"} onClick={() => handleOpen(collaborator.user)} sx={{ cursor: 'pointer' }}/>
           ))}
         </AvatarGroup>
-        } action={<IconButton size="small" sx={{mt:0.8}} color="primary" onClick={(e) => navigate(`/notes/${children._id}/settings`)}><TuneSharpIcon fontSize="large"/></IconButton>}/>
+        } action={profile._id === children.author._id && <IconButton size="small" sx={{mt:0.8}} color="primary" onClick={(e) => navigate(`/notes/${children._id}/settings`)}><TuneSharpIcon fontSize="large"/></IconButton>}/>
       <Divider sx={{ borderColor: 'primary.main', borderWidth: 1 }}/>
       <CardContent onClick={() => (navigate(`/notes/${children._id}`))} sx={{ cursor: "pointer" }}>
         <Typography variant="h6" sm="h7" sx={{overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "2", WebkitBoxOrient: "vertical"}}>{children.title}</Typography>

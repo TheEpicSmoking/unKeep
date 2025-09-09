@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { Modal, Popper, List, ListItemText, ListItemButton, Stack, Button, OutlinedInput, Box, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Slide, Chip, Tab, Typography, Switch} from '@mui/material';
+import { Modal, Popper, List, ListItemText, ListItemButton, Stack, Button, OutlinedInput, Box, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Slide, Chip, Tab, Typography, Switch, ButtonBase} from '@mui/material';
 import {  TabContext, TabList, TabPanel, Timeline, TimelineItem, TimelineConnector, TimelineSeparator, TimelineContent, TimelineDot, TimelineOppositeContent } from '@mui/lab'; 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
@@ -13,7 +13,8 @@ import AddIcon from '@mui/icons-material/Add';
 
 
 export default function MyProfile() {
-  const { getNote, updateNoteSettings, getUsers, getNoteHistory, getNoteVersion, revertNoteToVersion, rebaseNoteToVersion } = useAuth();
+  const { getNote, updateNoteSettings, getUsers, getNoteHistory, getNoteVersion, revertNoteToVersion, rebaseNoteToVersion, deleteNote, getMyProfile } = useAuth();
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userLoading, setUserLoading] = useState(false);
   const [noteLoading, setNoteLoading] = useState(false);
@@ -36,6 +37,15 @@ export default function MyProfile() {
   const [openCommit, setOpenCommit] = useState(false);
   const [commit, setCommit] = useState(null);
   const anchorElRef = useRef(null);
+
+  const fetchProfile = async () => {
+    try {
+      const profileData = await getMyProfile();
+      setProfile(profileData);
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+    }
+  };
 
   const handleOpenUser = (user) => {
     setUser(user);
@@ -81,7 +91,7 @@ export default function MyProfile() {
   const revertToVersion = async (versionId) => {
     try {
       await revertNoteToVersion(id, versionId);
-      fetchNoteHistory();
+      fetchNote();
     } catch (error) {
       console.error('Failed to revert note to version:', error);
     }
@@ -90,7 +100,7 @@ export default function MyProfile() {
   const rebaseToVersion = async (versionId) => {
     try {
       await rebaseNoteToVersion(id, versionId);
-      fetchNoteHistory();
+      fetchNote();
     } catch (error) {
       console.error('Failed to rebase note to version:', error);
     }
@@ -127,6 +137,7 @@ export default function MyProfile() {
   }
 
   useEffect(() => {
+    fetchProfile();
     fetchNote();
     setErrors(null);
   }, []);
@@ -146,15 +157,19 @@ export default function MyProfile() {
     if (note) {
       setTags(note.tags || []);
       setCollaborators(note.collaborators || []);
+      if (profile && note.author._id !== profile._id) {
+        navigate("/");
+      }
     }
-  }, [note]);
+  }, [note, profile]);
 
   const handleSubmit = async () => {
     setErrors([])
     setLoading(true)
 
     try {
-      await updateNoteSettings(id, collaborators, tags);
+      await updateNoteSettings(id, note?.title, collaborators, tags);
+      fetchNote();
     } catch (error) {
       console.error('Failed to update note settings:', error);
       const msg = error.response?.data?.message || error.response?.data?.error || 'Server error'
@@ -167,6 +182,7 @@ export default function MyProfile() {
   const handleNoteDelete = async () => {
     setLoading(true);
     try {
+      await deleteNote(id);
       navigate("/");
     } catch (error) {
       console.error("Failed to delete note:", error);
@@ -190,23 +206,23 @@ export default function MyProfile() {
       disableScrollLock
       open={openCommit}
     >
-      <AuthFormWrapper title={noteLoading ? "Loading..." : commit?.currentVersion} onClose={handleCloseCommit} logo={false} sx={{ display: "flex", flexDirection: "column", gap: 2, width: "95%", height: "80%", pb: 9 }}>
+      <AuthFormWrapper title={noteLoading ? "Loading..." : `Version: ${commit?.currentVersion}`} onClose={handleCloseCommit} logo={false} sx={{ display: "flex", flexDirection: "column", gap: 2, width: "95%", height: "80%" }}>
         {noteLoading ? <Typography>Loading...</Typography> : (
           <>
             <Typography variant="subtitle2" align="left" sx={{ color: 'text.disabled', pb: 2}}>
               {new Date(commit?.updatedAt).toLocaleString()}
             </Typography>
-            <Box sx={{ overflowY: 'auto', height: '100%', border: "1px solid rgb(0, 0, 0)", p: 2 }}>
-              <Typography variant="h6" sx={{ pb: 2 }}>{commit?.title}</Typography>
-              <Typography variant="body2" color="text.primary">{commit?.content}</Typography>
+            <Box sx={{ overflowY: 'auto', overflowX: 'hidden', height: '100%', border: "1px solid rgb(0, 0, 0)", p: 2 }}>
+              <Typography variant="h6" sx={{ pb: 2, overflowWrap: "break-word" }}>{commit?.title}</Typography>
+              <Typography variant="body2" component="p" color="text.primary" sx={{ overflowWrap: "break-word" }}>{commit?.content}</Typography>
             </Box>
-            <Button onClick={() => revertToVersion(commit?.currentVersion)} disabled={noteLoading && commit?.currentVersion === note?.currentVersion} sx={{bgcolor: 'primary.main', color: "text.tertiary"}}> Revert to this version </Button>
-            <Button onClick={() => rebaseToVersion(commit?.currentVersion)} disabled={noteLoading && commit?.currentVersion === 0} sx={{bgcolor: 'primary.main', color: "text.tertiary"}}> Rebase to this version </Button>
+            <Button onClick={() => { revertToVersion(commit?.currentVersion); handleCloseCommit(); }} disabled={noteLoading || commit?.currentVersion === note?.currentVersion} sx={{bgcolor: 'primary.main', color: "text.tertiary", "&.Mui-disabled": { bgcolor: 'action.disabled', color: 'text.disabled' }}}> Revert to this version </Button>
+            <Button onClick={() => { rebaseToVersion(commit?.currentVersion); handleCloseCommit(); }} disabled={noteLoading || commit?.currentVersion === 0} sx={{bgcolor: 'primary.main', color: "text.tertiary", "&.Mui-disabled": { bgcolor: 'action.disabled', color: 'text.disabled' }}}> Rebase to this version </Button>
           </>
         )}
       </AuthFormWrapper>
     </Modal>
-    <AuthFormWrapper title="Note Settings" logo={false} onClose={() => navigate("/")} sx={{ height: {xs:'80%', md: '50%'},  display: "flex", flexDirection: "column" }}>
+    <AuthFormWrapper title="Note Settings" logo={false} onClose={() => navigate("/")} sx={{ height: {xs:'80%', md: '70%'},  display: "flex", flexDirection: "column" }}>
       <Dialog
         disableScrollLock
         open={openDeleteDialog}
@@ -222,8 +238,8 @@ export default function MyProfile() {
             >
                 <Close sx={{width: "4vw", height: "4vw", maxWidth:"25px", maxHeight:"25px"}}/>
           </IconButton>
-          <DialogContentText sx={{fontSize: '1.4rem'}}>
-            Your note will be permanently deleted.
+          <DialogContentText sx={{fontSize: '1.4rem', noWrap: true}}>
+            {note?.title} will be permanently deleted.
           </DialogContentText>
           <FormField label='To confirm, please type "DELETE"' placeholder="DELETE" onChange={(e) => setconfirmDelete(e.target.value)}></FormField>
         </DialogContent>
@@ -231,9 +247,12 @@ export default function MyProfile() {
           <Button onClick={handleNoteDelete} sx={{ color: 'error.main' }} disabled={confirmDelete !== "DELETE"}>Delete Note</Button>
         </DialogActions>
       </Dialog>
-      <Typography variant="h6">
-        {note?.title || 'Loading...'}
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent:"start", width: '100%', mb: 1 }}>
+        <Typography variant="h6">
+          {note?.title || 'Loading...'}
+        </Typography>
+        <Button variant="contained" color="error" sx={{ borderRadius: 0 }} onClick={() => setOpenDeleteDialog(true)} disabled={loading}>Delete Note</Button>
+      </Box>
       <TabContext value={tabValue} >
         <TabList variant="fullWidth" sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }} onChange={handleTabChange}>
           <Tab label="Note History" sx={{ textTransform: 'none', fontSize: {xs: '0.9rem', md: '1.2rem' } }} value="1"/>

@@ -107,28 +107,20 @@ export function AuthProvider({ children }) {
 
   const updateNote = async (id, title, content) => {
     try {
-      if (title === null){
-        const res = await api.put(`notes/${id}`, { content }, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        })
-        return res.data
-      } else {
       const res = await api.put(`notes/${id}`, { title, content }, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
-      })}
+      })
       return res.data
     } catch (error) {
       throw error
     }
   }
 
-  const updateNoteSettings = async (id, collaborators, tags) => {
+  const updateNoteSettings = async (id, title, collaborators, tags) => {
     try {
-      const res = await api.put(`notes/${id}`, { collaborators, tags }, {
+      const res = await api.put(`notes/${id}`, { title, collaborators, tags }, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -190,6 +182,9 @@ export function AuthProvider({ children }) {
       })
       return res.data
     } catch (error) {
+      if (error.response?.status === 404) {
+        logout()
+      }
       throw error
     }
   }
@@ -228,6 +223,7 @@ export function AuthProvider({ children }) {
           }
         })
       }
+      logout()
       return res.data
     } catch (error) {
       throw error

@@ -86,7 +86,6 @@ export const getNoteById = async (req, res) => {
 export const updateNote = async (req, res, io) => {
     try {
         const { title, content, collaborators, tags, author } = req.body;
-        let historyCreated = false;
         let currentNote = await Note.findById(req.params.id);
         if (!currentNote) {
             return res.status(404).json({ error: 'Note not found' });
@@ -97,27 +96,33 @@ export const updateNote = async (req, res, io) => {
         const oldTitle = currentNote.title || '';
         const oldContent = currentNote.content || '';
         console.log(oldContent, oldTitle);
-        currentNote.title = title || currentNote.title;
-        currentNote.content = content || currentNote.content; 
+        currentNote.title = title || oldTitle;
+        currentNote.content = content || oldContent;
         currentNote.collaborators = collaborators || currentNote.collaborators;
         currentNote.tags = tags || currentNote.tags;
         currentNote.author = author || currentNote.author;
         let lastHistory = null;
         lastHistory = await NoteHistory.findOne({ noteId: req.params.id });
-        if (!lastHistory) {
-            await NoteHistory.create({
-                noteId: currentNote.id,
-                createdBy: req.userId,
-                delta: [dmp.patch_toText(dmp.patch_make("", title)), dmp.patch_toText(dmp.patch_make("", content))],
-                baseVersion: 0
-            });
-            historyCreated = true;
-        }
         if (!currentNote.isModified()) {
             return res.status(400).json({ error: 'No changes detected' });
         }
-        if ((currentNote.isModified('title') || currentNote.isModified('content')) && !historyCreated) {
-            io.to(req.params.id).emit("note-full-update", currentNote);
+        io.to(req.params.id).emit("note-full-update", currentNote);
+        if (!lastHistory) {
+            const titleDiffs = dmp.diff_main("", title || '');
+            dmp.diff_cleanupSemantic(titleDiffs);
+            const titlePatches = dmp.patch_make("", titleDiffs);
+            const contentDiffs = dmp.diff_main(oldContent, content || '');
+            dmp.diff_cleanupSemantic(contentDiffs);
+            const contentPatches = dmp.patch_make(oldContent, contentDiffs);
+            const delta = [dmp.patch_toText(titlePatches), dmp.patch_toText(contentPatches)];
+            await NoteHistory.create({
+                noteId: req.params.id,
+                createdBy: req.userId,
+                delta: delta,
+                baseVersion: 0
+            });
+        }
+        if ((currentNote.isModified('title') || currentNote.isModified('content')) && lastHistory) {
             req.app.set('notesDrafts')[req.params.id] = null;
             const titleDiffs = dmp.diff_main(oldTitle, title);
             dmp.diff_cleanupSemantic(titleDiffs);

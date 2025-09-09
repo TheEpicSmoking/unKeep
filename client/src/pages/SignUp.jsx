@@ -9,7 +9,7 @@ import ErrorLog from '../components/ErrorLog'
 
 export default function SignUp() {
   const theme = useTheme()
-  const { register } = useAuth()
+  const { register, login } = useAuth()
   const navigate = useNavigate()
   const [passwordValue, setPasswordValue] = useState('')
   const [errors, setErrors] = useState([])
@@ -24,6 +24,7 @@ export default function SignUp() {
 
     try {
       await register(usernamemail, email, password)
+      await login(usernamemail, password)
       navigate('/')
     } catch (error) {
       const msg = error.response?.data?.message || error.response?.data?.error || 'Server error'
@@ -39,7 +40,7 @@ export default function SignUp() {
         <FormField id="email" label="Email" autoComplete="email" placeholder="your@email.com" />      
         <FormField type="password" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />
         <ErrorLog errors={errors} />
-        <Button variant="contained" sx={{ borderRadius: 0 }} fullWidth onClick={handleSubmit} disabled={loading}>
+        <Button variant="contained" sx={{ borderRadius: 0, mt: 2 }} fullWidth onClick={handleSubmit} disabled={loading}>
           <Typography variant="button" sx={{ textTransform: 'none' }}>
             {loading ? 'Signing Up...' : 'Sign Up'}
           </Typography>

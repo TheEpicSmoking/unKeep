@@ -5,19 +5,15 @@ import LogoutSharpIcon from '@mui/icons-material/LogoutSharp';
 import CustomAvatar from './CustomAvatar.jsx';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router';
-import Logo from './Logo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useState, useEffect } from 'react';
+import Logo from './Logo.jsx';
+import { useState } from 'react';
 
 
-export default function Navbar() {
+export default function Navbar({ profile, loading }) {
+  const { logout } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
-  const { getMyProfile, logout } = useAuth();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -34,22 +30,6 @@ export default function Navbar() {
   };
 
   const handleClose = () => setAnchorEl(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function fetchProfile() {
-      try {
-        const myProfile = await getMyProfile();
-        if (isMounted) setProfile(myProfile);
-      } catch (e) {
-        if (isMounted) setProfile(null);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-    fetchProfile();
-    return () => { isMounted = false; };
-  }, [getMyProfile]);
 
   return (
     <AppBar position="fixed" sx={{ backgroundColor: theme.palette.primary.main }}>

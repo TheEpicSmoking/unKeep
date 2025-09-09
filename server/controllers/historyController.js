@@ -23,11 +23,16 @@ async function patch(id, version){
             if (!patchEntry) {
                 throw new Error('Patch not found for version ' + i);
             }
+            console.log("Applying patch for version", i, ":", patchEntry.delta);
             const titlePatches = dmp.patch_fromText(patchEntry.delta[0]);
             const contentPatches = dmp.patch_fromText(patchEntry.delta[1]);
+            console.log("Applying patches title:", titlePatches);
+            console.log("Applying patches content:", contentPatches);
 
             [patchedTitle] = dmp.patch_apply(titlePatches, patchedTitle);
+            console.log("Patched title to:", patchedTitle);
             [patchedContent] = dmp.patch_apply(contentPatches, patchedContent);
+            console.log("Patched content to:", patchedContent);
         }
         currentNote.title = patchedTitle;
         currentNote.content = patchedContent;
