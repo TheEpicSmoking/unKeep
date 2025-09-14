@@ -106,7 +106,6 @@ export const updateNote = async (req, res, io) => {
         if (!currentNote.isModified()) {
             return res.status(400).json({ error: 'No changes detected' });
         }
-        io.to(req.params.id).emit("note-full-update", currentNote);
         if (!lastHistory) {
             const titleDiffs = dmp.diff_main("", title || '');
             dmp.diff_cleanupSemantic(titleDiffs);
@@ -140,6 +139,8 @@ export const updateNote = async (req, res, io) => {
             currentNote.currentVersion += 1;
         }
         await Note.findByIdAndUpdate(req.params.id, currentNote);
+        io.to(req.params.id).emit("note-full-update", currentNote);
+        console.log(`Note ${req.params.id} updated by user ${req.userId}`);
         res.status(200).json({message: "Note updated successfully"});
     } catch (error) {
         console.error('Error updating note:', error);

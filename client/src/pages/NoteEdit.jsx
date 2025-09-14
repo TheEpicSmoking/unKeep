@@ -24,8 +24,6 @@ export default function NoteEdit({ socket }) {
     const [canEdit, setCanEdit] = useState(false);
     const [userCount, setUserCount] = useState(0);
     const [unsaved, setUnsaved] = useState(false);
-    const canEditRef = useRef(canEdit);
-    canEditRef.current = canEdit;
     const quillRef = useRef(null);
     const editorRef = useRef(null);
     const controlledNavigate = useControlledNavigation(userCount === 1 && unsaved);
@@ -89,13 +87,12 @@ export default function NoteEdit({ socket }) {
         socket.emit("leave-note", id);
         console.log("Disconnected from server");
       };
-    }, [user, note, canEdit]);
+    }, [user, note]);
 
     useEffect(() => {
       if (!user || !note) return;
       editorRef.current = new Quill(quillRef.current, {
         theme: "snow",
-        readOnly: !canEdit,
         modules: {
           toolbar: false,
           cursors: true,
@@ -130,14 +127,16 @@ export default function NoteEdit({ socket }) {
         if (source !== "user") return;
         socket.emit("note-change", id, delta );
         const range = editorRef.current.getSelection();
-        if (range && canEdit) {
-          socket.emit("cursor-change", id, range, user._id );
-        }
       });
-
+    
     editorRef.current.root.addEventListener("focusout", () => {
       console.log("blur event dal root");
       socket.emit("cursor-change", id, null, user);
+    });
+
+    editorRef.current.root.addEventListener("focusin", () => {
+      const range = editorRef.current.getSelection();
+      socket.emit("cursor-change", id, range, user);
     });
       
       socket.on("note-update", (delta) => {
@@ -146,16 +145,16 @@ export default function NoteEdit({ socket }) {
       });
 
       editorRef.current.on("selection-change", ( range, oldRange, source) => {
-        if (source === "user" && range && canEdit) {
-          console.log("cursor moved to ", range)
-          socket.emit("cursor-change", id, range, user );
+        if (user && oldRange !== range) {
+          socket.emit("cursor-change", id, range, user);
         }
       });
 
-      socket.on("cursor-update", ( user, range ) => {
-        if (user.username) {
-          cursors.createCursor(user._id, user.username, stringToColor(user.username));
-          cursors.moveCursor(user._id, range);
+      socket.on("cursor-update", ( recievedUser, range ) => {
+        if (recievedUser.username && recievedUser._id && recievedUser._id !== user._id) {
+          console.log("cursor update received for ", recievedUser.username, recievedUser, range);
+          cursors.createCursor(recievedUser._id, recievedUser.username, stringToColor(recievedUser.username));
+          cursors.moveCursor(recievedUser._id, range);
         }
       });
 
@@ -174,7 +173,7 @@ export default function NoteEdit({ socket }) {
       socket.off("disconnect");
     }
 
-    }, [user, note, canEditRef]);
+    }, [user, note]);
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {

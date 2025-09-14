@@ -43,9 +43,16 @@ io.on("connection", (socket) => {
 
     socket.on("join-note", (noteId) => {
         socket.join(noteId);
+        console.log("Note drafts:", notesDrafts[noteId]);
         if (notesDrafts[noteId]) {
             console.log(`Loaded draft for note: ${noteId}`);
-            socket.emit("note-init", notesDrafts[noteId], (cursorsState[noteId] || {}));
+            //send cursorstate without the user himself
+            if (cursorsState[noteId] && socket.data.user) {
+                const { [socket.data.user]: _, ...otherCursors } = cursorsState[noteId];
+                socket.emit("note-init", notesDrafts[noteId], otherCursors);
+            } else {
+                socket.emit("note-init", notesDrafts[noteId], (cursorsState[noteId] || {}));
+            }
         }
         io.to(noteId).emit("user-count", io.sockets.adapter.rooms.get(noteId)?.size || 0);
         console.log(`User joined note: ${noteId}`);
@@ -80,9 +87,9 @@ io.on("connection", (socket) => {
 
     socket.on("note-change", (noteId, delta) => {
         notesDrafts[noteId] = new Delta(notesDrafts[noteId]).compose(new Delta(delta));
-        console.log(`Created new draft ${notesDrafts[noteId]}`);
-        console.log(`Note changed: ${noteId}`, delta);
-        socket.to(noteId).emit("note-update", delta);
+        console.log("note change event received");
+        
+        socket.broadcast.to(noteId).emit("note-update", delta);
     });
 
     socket.on("cursor-change", (noteId, cursor, user) => {

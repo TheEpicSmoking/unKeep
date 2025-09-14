@@ -222,7 +222,7 @@ export default function MyProfile() {
         )}
       </AuthFormWrapper>
     </Modal>
-    <AuthFormWrapper title="Note Settings" logo={false} onClose={() => navigate("/")} sx={{ height: {xs:'80%', md: '70%'},  display: "flex", flexDirection: "column" }}>
+    <AuthFormWrapper title="Note Settings" logo={false} onClose={() => navigate(-1)} sx={{ height: {xs:'80%', md: '70%'},  display: "flex", flexDirection: "column" }}>
       <Dialog
         disableScrollLock
         open={openDeleteDialog}
@@ -254,10 +254,10 @@ export default function MyProfile() {
         <Button variant="contained" color="error" sx={{ borderRadius: 0 }} onClick={() => setOpenDeleteDialog(true)} disabled={loading}>Delete Note</Button>
       </Box>
       <TabContext value={tabValue} >
-        <TabList variant="fullWidth" sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }} onChange={handleTabChange}>
-          <Tab label="Note History" sx={{ textTransform: 'none', fontSize: {xs: '0.9rem', md: '1.2rem' } }} value="1"/>
-          <Tab label="Collaborators" sx={{ textTransform: 'none', fontSize: { xs: '0.9rem', md: '1.2rem' } }} value="2"/>
-          <Tab label="Tags" sx={{fontSize: { xs: '0.9rem', md: '1.2rem' } }} value="3"/>
+        <TabList variant="fullWidth" sx={{ borderBottom: 1, borderColor: 'divider' }} onChange={handleTabChange}>
+          <Tab label="Note History" sx={{ fontSize: {xs: '0.9rem', md: '1.2rem'},  pb: {xs: 5, md: 0}}} value="1"/>
+          <Tab label="Collaborators" sx={{ fontSize: { xs: '0.9rem', md: '1.2rem' }, pb: { xs: 5, md: 0 } }} value="2"/>
+          <Tab label="Tags" sx={{ fontSize: { xs: '0.9rem', md: '1.2rem' }, pb: { xs: 5, md: 0 } }} value="3"/>
         </TabList>
         <TabPanel value="1" sx={{p:0, pt:2, minHeight:0, gap:2, height:'100%',flexDirection: 'column', display: (tabValue === "1" ? 'flex' : 'none')}}>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignContent: 'flex-start', overflowY: 'auto', gap: 2, width: '100%', height: '100%', border: "1px solid rgb(0, 0, 0)", p: 2 }}>
