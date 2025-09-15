@@ -47,6 +47,7 @@ export default function NoteEdit({ socket }) {
     const checkChanges = (n = note) => {
       const title = document.getElementById("noteTitle")?.value || n.title;
       const content = editorRef.current?.getText();
+      console.log("CHECK CHANGES", {title, content, originalTitle: n.title, originalContent: n?.content ? n.content : "\n"});
       if (title !== n.title || content !== (n?.content ? n.content : "\n")) {
         setUnsaved(true);
       } else {
@@ -176,11 +177,15 @@ export default function NoteEdit({ socket }) {
         }
       });
 
-      socket.on("note-full-update", (newNote) => {
+      socket.on("note-full-update", (newNote, revert) => {
         console.log("FULL UPDATE", newNote);
         setNote(newNote);
         setErrors(null);
-        checkChanges(newNote);
+        if (revert) {
+          setUnsaved(false);
+        } else {
+          checkChanges(newNote);
+        }
       });
 
     return () => {

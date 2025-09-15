@@ -12,7 +12,7 @@ import { Close, EditSharp, VisibilitySharp } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 
 
-export default function MyProfile() {
+export default function MyProfile({ socket }) {
   const { getNote, updateNoteSettings, getUsers, getNoteHistory, getNoteVersion, revertNoteToVersion, rebaseNoteToVersion, deleteNote, getMyProfile } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -140,6 +140,14 @@ export default function MyProfile() {
     fetchProfile();
     fetchNote();
     setErrors(null);
+    socket.emit("join-note", id);
+    socket.on("note-full-update", () => {
+      fetchNote();
+      fetchNoteHistory();
+    });
+    return () => { socket.emit("leave-note", id);
+      socket.off("note-full-update");
+    };
   }, []);
 
   useEffect(() => {

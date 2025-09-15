@@ -122,7 +122,7 @@ export const revertNote = async (req, res, io) => {
         await note.save();
         await NoteHistory.deleteMany({ noteId, baseVersion: { $gt: version } });
         req.app.set('notesDrafts')[req.params.id] = null;
-        io.to(req.params.id).emit("note-full-update", note);
+        io.to(req.params.id).emit("note-full-update", note, true);
         res.status(200).json({message: "Note reverted successfully", version: note.currentVersion});
     } catch (error) {
         console.error('Error reverting note:', error);

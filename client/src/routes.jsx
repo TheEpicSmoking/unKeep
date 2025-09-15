@@ -19,7 +19,7 @@ export default function AppRoutes({ socket }) {
       <Route path="/me" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
       <Route path="/me/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
       <Route path="/notes/:id" element={<ProtectedRoute><NoteEdit socket={socket} /></ProtectedRoute>} />
-      <Route path="/notes/:id/settings" element={<ProtectedRoute><NoteSettings /></ProtectedRoute>} />
+      <Route path="/notes/:id/settings" element={<ProtectedRoute><NoteSettings socket={socket} /></ProtectedRoute>} />
       <Route path="*" element={<><Navbar /><ErrorBanner error={{ code: 404, message: 'Page Not Found' }} /></>} />
     </Routes>
   );
