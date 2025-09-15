@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const noteHistorySchema = new mongoose.Schema({
+const noteVersionSchema = new mongoose.Schema({
     noteId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Note',
@@ -18,4 +18,4 @@ const noteHistorySchema = new mongoose.Schema({
     },
 }, { timestamps: { createdAt: true, updatedAt: false }, versionKey: false });
 
-export default mongoose.model("NoteHistory", noteHistorySchema);
+export default mongoose.model("NoteVersion", noteVersionSchema);

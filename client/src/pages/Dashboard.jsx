@@ -77,7 +77,7 @@ export default function Dashboard() {
           Create an account or log in to start organizing your notes.
         </Typography>
       </Card>}
-      {profile && !notes && !loading && !error && (
+      {profile && notes.length === 0 && !loading && !error && (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignContent: 'center', justifyContent: 'center', mt: 5, width: {xs: '90%', md: '50%'}, alignSelf: 'center', gap: 5 }}>
         <Card color="secondary" variant="solid" sx={{mr: 3, width: '100%', boxShadow: "10px 10px 0px 2px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
           <Typography variant="h6" align="center" sx={{ p: 2, color: 'text.secondary' }}>
@@ -87,7 +87,7 @@ export default function Dashboard() {
         <AddNoteFab onClick={() => handleCreateNote()} sx={{ position: 'relative', right:0, bottom: 0, height: 100, width: 100, alignSelf: 'center' }} />
         </Box>
       )}
-      {profile && notes && !loading && !error && <AddNoteFab onClick={() => handleCreateNote()} />}
+      {profile && notes.length > 0 && !loading && !error && <AddNoteFab onClick={() => handleCreateNote()} />}
     </>
   );
 }

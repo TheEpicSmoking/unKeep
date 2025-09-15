@@ -256,7 +256,7 @@ export default function MyProfile({ socket }) {
         </DialogActions>
       </Dialog>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent:"start", width: '100%', mb: 1 }}>
-        <Typography variant="h6">
+        <Typography variant="h6" noWrap sx={{ maxWidth: '60%' }}>
           {note?.title || 'Loading...'}
         </Typography>
         <Button variant="contained" color="error" sx={{ borderRadius: 0 }} onClick={() => setOpenDeleteDialog(true)} disabled={loading}>Delete Note</Button>
@@ -273,8 +273,11 @@ export default function MyProfile({ socket }) {
                 {noteHistory.map((historyItem, index) => (
                   <TimelineItem key={index}>
                     <TimelineOppositeContent>
+                      <Typography variant="body2" color="text.primary"  onClick={() => handleOpenCommit(noteHistory.length-(index+1))} sx={{cursor: "pointer", pr: {xs:0, md:2}, textAlign: 'right' }}>
+                        Version: {noteHistory.length-(index+1)}
+                      </Typography>
                       <Typography variant="body2" color="text.disabled"  onClick={() => handleOpenCommit(noteHistory.length-(index+1))} sx={{cursor: "pointer", pr: {xs:0, md:2}, textAlign: 'right' }}>
-                        {new Date(historyItem.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' })}
+                        {new Date(historyItem.createdAt).toLocaleString()}
                       </Typography>
                     </TimelineOppositeContent>
                     <TimelineSeparator>

@@ -1,8 +1,8 @@
 import User from '../models/userModel.js';
 import Note from '../models/noteModel.js';
-import NoteHistory from '../models/noteHistoryModel.js';
+import NoteVersion from '../models/noteVersionModel.js';
 import RefreshToken from '../models/refreshTokenModel.js';
-import { rebase } from './historyController.js';
+import { rebase } from './versionController.js';
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 
@@ -154,7 +154,7 @@ export const deleteUser = async (req, res) => {
             }
         }
             else {
-                await NoteHistory.deleteMany({ noteId: { $in: Notes.map(note => note._id) } });
+                await NoteVersion.deleteMany({ noteId: { $in: Notes.map(note => note._id) } });
                 await Note.findByIdAndDelete(note._id);
             }
         }

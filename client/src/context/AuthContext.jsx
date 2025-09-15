@@ -232,7 +232,7 @@ export function AuthProvider({ children }) {
 
   const getNoteHistory = async (id) => {
     try {
-      const res = await api.get(`/history/${id}`, {
+      const res = await api.get(`/notes/${id}/versions`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -245,7 +245,7 @@ export function AuthProvider({ children }) {
 
   const getNoteVersion = async (noteId, versionId) => {
     try {
-      const res = await api.get(`/history/${noteId}/${versionId}`, {
+      const res = await api.get(`/notes/${noteId}/versions/${versionId}?type=full`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -258,7 +258,7 @@ export function AuthProvider({ children }) {
 
   const revertNoteToVersion = async (noteId, versionId) => {
     try {
-      const res = await api.post(`/history/${noteId}/revert/${versionId}`, {}, {
+      const res = await api.post(`/notes/${noteId}/versions/${versionId}/revert`, {}, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -271,7 +271,7 @@ export function AuthProvider({ children }) {
 
   const rebaseNoteToVersion = async (noteId, versionId) => {
     try {
-      const res = await api.post(`/history/${noteId}/rebase/${versionId}`, {}, {
+      const res = await api.post(`/notes/${noteId}/versions/${versionId}/rebase`, {}, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }

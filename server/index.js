@@ -4,11 +4,10 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import mongoose, { connect } from 'mongoose';
+import mongoose from 'mongoose';
 import { config } from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
-import historyRoutes from './routes/historyRouter.js';
 import userRoutes from './routes/userRoutes.js';
 import { v2 as cloudinary } from 'cloudinary';
 import Delta from 'quill-delta';
@@ -134,5 +133,4 @@ mongoose.connect(MONGO_URI).then(() => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes(io));
-app.use('/api/history', historyRoutes(io));
 app.use('/api/users', userRoutes);

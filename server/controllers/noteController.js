@@ -1,5 +1,5 @@
 import Note from '../models/noteModel.js';
-import NoteHistory from '../models/noteHistoryModel.js';
+import NoteVersion from '../models/noteVersionModel.js';
 import DiffMatchPatch from 'diff-match-patch';
 const dmp = new DiffMatchPatch();
 
@@ -29,6 +29,7 @@ export const createNote = async (req, res) => {
 }
 
 export const getNotes = async (req, res) => {
+    console.log("Fetching notes for user:", req.userId);
     try {
         let notes = await Note.find({
             $or: [
@@ -43,11 +44,10 @@ export const getNotes = async (req, res) => {
         if (!notes || notes.length === 0) {
             return res.status(404).json({ error: 'No notes found' });
         }
-
         const filteredNotes = [];
         for (const note of notes) {
-            const lastHistory = await NoteHistory.findOne({ noteId: note.id });
-            if (lastHistory) {
+            const lastVersion = await NoteVersion.findOne({ noteId: note.id });
+            if (lastVersion) {
                 filteredNotes.push(note);
             } else {
                 await Note.deleteOne({ _id: note.id });
@@ -101,12 +101,13 @@ export const updateNote = async (req, res, io) => {
         currentNote.collaborators = collaborators || currentNote.collaborators;
         currentNote.tags = tags || currentNote.tags;
         currentNote.author = author || currentNote.author;
-        let lastHistory = null;
-        lastHistory = await NoteHistory.findOne({ noteId: req.params.id });
+        let lastVersion = null;
+        lastVersion = await NoteVersion.findOne({ noteId: req.params.id });
+        console.log("Version for note", req.params.id, ":", lastVersion);
         if (!currentNote.isModified()) {
             return res.status(400).json({ error: 'No changes detected' });
         }
-        if (!lastHistory) {
+        if (!lastVersion) {
             const titleDiffs = dmp.diff_main("", title || '');
             dmp.diff_cleanupSemantic(titleDiffs);
             const titlePatches = dmp.patch_make("", titleDiffs);
@@ -114,14 +115,14 @@ export const updateNote = async (req, res, io) => {
             dmp.diff_cleanupSemantic(contentDiffs);
             const contentPatches = dmp.patch_make(oldContent, contentDiffs);
             const delta = [dmp.patch_toText(titlePatches), dmp.patch_toText(contentPatches)];
-            await NoteHistory.create({
+            await NoteVersion.create({
                 noteId: req.params.id,
                 createdBy: req.userId,
                 delta: delta,
                 baseVersion: 0
             });
         }
-        if ((currentNote.isModified('title') || currentNote.isModified('content')) && lastHistory) {
+        if ((currentNote.isModified('title') || currentNote.isModified('content')) && lastVersion) {
             req.app.set('notesDrafts')[req.params.id] = null;
             const titleDiffs = dmp.diff_main(oldTitle, title);
             dmp.diff_cleanupSemantic(titleDiffs);
@@ -130,7 +131,7 @@ export const updateNote = async (req, res, io) => {
             dmp.diff_cleanupSemantic(contentDiffs);
             const contentPatches = dmp.patch_make(oldContent, contentDiffs);
             const delta = [dmp.patch_toText(titlePatches), dmp.patch_toText(contentPatches)];
-            await NoteHistory.create({
+            await NoteVersion.create({
                 noteId: req.params.id,
                 createdBy: req.userId,
                 delta: delta,
@@ -162,7 +163,7 @@ export const deleteNote = async (req, res) => {
             return res.status(403).json({ error: 'You do not have permission to delete this note' });
         }
         await note.deleteOne();
-        await NoteHistory.deleteMany({ noteId: req.params.id });
+        await NoteVersion.deleteMany({ noteId: req.params.id });
         res.status(200).json({message: "Note deleted successfully"});
     } catch (error) {
         console.error('Error deleting note:', error);
