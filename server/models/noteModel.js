@@ -33,6 +33,7 @@ const noteSchema = new mongoose.Schema({
     }
 }, {timestamps: true, versionKey: 'currentVersion'});
 
+// hook to prevent author from being a collaborator
 noteSchema.pre('save', function(next) {
     const authorId = this.author;
     const hasAuthorAsCollaborator = this.collaborators.some(collab => collab.user.equals(authorId));

@@ -25,7 +25,7 @@ export default function MyProfile() {
     try {
       const profile = await getMyProfile()
       setUser(profile)
-      setAvatar(profile.profilePicture)
+      setAvatar(profile.avatar)
       setAvatarFile(null)
     } catch (error) {
       console.error('Failed to fetch profile:', error);
@@ -48,16 +48,16 @@ export default function MyProfile() {
     const email = document.getElementById('email').value
 
     try {
-      if (avatarFile === null) {
-        await updateProfile({ username, email, avatar: "" });
-      } else if (avatarFile) {
+      if (avatarFile) {
         const formData = new FormData();
         formData.append('username', username);
         formData.append('email', email);
         formData.append('avatar', avatarFile);
         await updateProfile(formData);
+        setAvatarFile(null);
+        fetchProfile();
       } else {
-        await updateProfile({ username, email });
+        await updateProfile({ username, email, avatar });
       }
     } catch (error) {
       const msg = error.response?.data?.message || error.response?.data?.error || 'Server error'
@@ -129,7 +129,7 @@ export default function MyProfile() {
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
         <Box sx={{position: "relative"}}>
         {avatar && <IconButton
-          sx={{ position:"absolute", top: 3, right: {xs: 43, md: 23}, color: "black", zIndex: 1, bgcolor: "rgba(255, 255, 255, 0.1)", '&:hover': { bgcolor: "rgba(255, 255, 255, 0.2)"} }}
+          sx={{ position:"absolute", top: 3, right: {xs: 43, md: 23}, color: "black", zIndex: 1, bgcolor: "rgba(255, 255, 255, 0.2)", '&:hover': { bgcolor: "rgba(255, 255, 255, 0.5)"}, borderRadius: 0 }}
           onClick={() => {
             setAvatarFile(null);
             setAvatar("");

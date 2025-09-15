@@ -16,7 +16,7 @@ export const getUsers = async (req, res) => {
             $or: [
                 { username: { $regex: query, $options: 'i' } },
             ]
-        }).limit(50).select('username profilePicture');
+        }).limit(50).select('username avatar');
 
         const sortedUsers = users.sort((a, b) => {
             const aStartsWith = a.username.toLowerCase().startsWith(query.toLowerCase());
@@ -38,7 +38,7 @@ export const getUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).select('username profilePicture');
+        const user = await User.findById(req.params.id).select('username avatar');
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -49,9 +49,9 @@ export const getUser = async (req, res) => {
     }
 }
 
-export const getUserProfile = async (req, res) => {
+export const getMyUser = async (req, res) => {
     try {
-        const user = await User.findById(req.userId).select('username profilePicture email');
+        const user = await User.findById(req.userId).select('username avatar email');
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -62,7 +62,7 @@ export const getUserProfile = async (req, res) => {
     }
 }
 
-export const updateUserProfile = async (req, res) => {
+export const updateMyUser = async (req, res) => {
     try {
         console.log(req.body)
         const { username, email, avatar = null } = req.body;
@@ -75,18 +75,20 @@ export const updateUserProfile = async (req, res) => {
         }
         user.username = username;
         user.email = email;
-
-        if (avatar === "") {
-            user.profilePicture = "";
-        }
-
-        if (req.file) {
+        if (user.avatar && avatar === "" || (req.file && req.file.fieldname === "avatar")) {
+            console.log(user.avatar);
             try {
-                if (user.profilePicture) {
-                    const publicId = user.profilePicture.split('/').pop().split('.')[0];
-                    await cloudinary.uploader.destroy(`Avatars/${publicId}`);
-                }
-
+                const publicId = user.avatar.split('/').pop().split('.')[0];
+                console.log('Deleting previous avatar with public ID:', publicId);
+                await cloudinary.uploader.destroy(`Avatars/${publicId}`);
+                user.avatar = "";
+            } catch (error) {
+                console.error('Error deleting previous avatar:', error);
+                return res.status(500).json({ error: 'Failed to delete previous avatar' });
+            }
+        }
+        if (req.file && req.file.fieldname === "avatar") {
+            try {
                 const uploadPromise = new Promise((resolve, reject) => {
                     const uploadStream = cloudinary.uploader.upload_stream(
                         { folder: 'Avatars' },
@@ -99,10 +101,10 @@ export const updateUserProfile = async (req, res) => {
                 });
                 
                 const result = await uploadPromise;
-                user.profilePicture = result.secure_url;
+                user.avatar = result.secure_url;
             } catch (uploadError) {
                 console.error('Cloudinary upload error:', uploadError);
-                return res.status(400).json({ error: 'Failed to upload profile picture' });
+                return res.status(400).json({ error: 'Failed to upload avatar' });
             }
         }
         
@@ -116,7 +118,7 @@ export const updateUserProfile = async (req, res) => {
             user: {
                 username: user.username,
                 email: user.email,
-                profilePicture: user.profilePicture
+                avatar: user.avatar
             }
         });
     } catch (error) {
@@ -132,7 +134,7 @@ export const updateUserProfile = async (req, res) => {
     }
 }
 
-export const deleteUser = async (req, res) => {
+export const deleteMyUser = async (req, res) => {
     try {
         const Notes = await Note.find({ author: req.userId });
                 const user = await User.findByIdAndDelete(req.userId);

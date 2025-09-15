@@ -207,7 +207,7 @@ export default function MyProfile({ socket }) {
       open={openUser}
     >
       <AuthFormWrapper title={user?.username} onClose={handleCloseUser} logo={false} sx={{ width: 400, height: 450, pb: 9 }}>
-        <CustomAvatar variant="rounded" src={user?.profilePicture} alt={user?.username} key={user?._id + "_2"} color={"white"} sx={{ border: 0, outline: 3, outlineColor: 'primary.main', color: 'primary.main', width: "100%", height: "100%", borderRadius: 10 }} />
+        <CustomAvatar variant="rounded" src={user?.avatar} alt={user?.username} key={user?._id + "_2"} color={"white"} sx={{ border: 0, outline: 3, outlineColor: 'primary.main', color: 'primary.main', width: "100%", height: "100%", borderRadius: 10 }} />
       </AuthFormWrapper>
     </Modal>
     <Modal
@@ -304,7 +304,7 @@ export default function MyProfile({ socket }) {
                     setCollaboratorQuery("");
                     setUserList([]);
                   }}>
-                    <CustomAvatar key={`${option._id}-search`} src={option.profilePicture} alt={option.username} color={"white"} variant="rounded" sx={{border: 0, outline: 3,boxShadow: "3px 3px 0px 3px", outlineColor: 'primary.main', color: 'primary.main', width: 34, height: 34}}/>
+                    <CustomAvatar key={`${option._id}-search`} src={option.avatar} alt={option.username} color={"white"} variant="rounded" sx={{border: 0, outline: 3,boxShadow: "3px 3px 0px 3px", outlineColor: 'primary.main', color: 'primary.main', width: 34, height: 34}}/>
                     <ListItemText primary={option.username} sx={{ pl: 2 }} />
                   </ListItemButton>
                 ))}
@@ -313,7 +313,7 @@ export default function MyProfile({ socket }) {
           <Stack sx={{ overflowY: 'auto', width: '100%', height: '100%', border: "1px solid rgb(0, 0, 0)" }}>
             {collaborators.map((collaborator) => (
               <Box key={collaborator.user._id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, borderBottom: '1px solid rgb(0, 0, 0)' }}>
-                <CustomAvatar key={collaborator.user._id} src={collaborator.user.profilePicture} alt={collaborator.user.username} color={"white"} variant="rounded" onClick={() => handleOpenUser(collaborator.user)} sx={{border: 0, outline: 3,boxShadow: "3px 3px 0px 3px", outlineColor: 'primary.main', color: 'primary.main', cursor:"pointer"}}/>
+                <CustomAvatar key={collaborator.user._id} src={collaborator.user.avatar} alt={collaborator.user.username} color={"white"} variant="rounded" onClick={() => handleOpenUser(collaborator.user)} sx={{border: 0, outline: 3,boxShadow: "3px 3px 0px 3px", outlineColor: 'primary.main', color: 'primary.main', cursor:"pointer"}}/>
                 <Typography noWrap sx={{ pl: 2 }}>{collaborator.user.username}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Switch

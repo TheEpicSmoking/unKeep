@@ -1,6 +1,7 @@
 import Note from '../models/noteModel.js';
 import NoteVersion from '../models/noteVersionModel.js';
 import DiffMatchPatch from 'diff-match-patch';
+
 const dmp = new DiffMatchPatch();
 
 export const createNote = async (req, res) => {
@@ -37,8 +38,8 @@ export const getNotes = async (req, res) => {
                 { "collaborators.user": req.userId }
             ]
         })
-            .populate('author', 'username profilePicture')
-            .populate('collaborators.user', 'username profilePicture')
+            .populate('author', 'username avatar')
+            .populate('collaborators.user', 'username avatar')
             .sort({ createdAt: -1 });
 
         if (!notes || notes.length === 0) {
@@ -64,11 +65,11 @@ export const getNotes = async (req, res) => {
     }
 }
 
-export const getNoteById = async (req, res) => {
+export const getNote = async (req, res) => {
     try {
         const note = await Note.findById(req.params.id)
-            .populate('author', 'username profilePicture')
-            .populate('collaborators.user', 'username profilePicture');
+            .populate('author', 'username avatar')
+            .populate('collaborators.user', 'username avatar');
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
@@ -103,10 +104,10 @@ export const updateNote = async (req, res, io) => {
         currentNote.author = author || currentNote.author;
         let lastVersion = null;
         lastVersion = await NoteVersion.findOne({ noteId: req.params.id });
-        console.log("Version for note", req.params.id, ":", lastVersion);
         if (!currentNote.isModified()) {
             return res.status(400).json({ error: 'No changes detected' });
         }
+        // Create root version if none exists
         if (!lastVersion) {
             const titleDiffs = dmp.diff_main("", title || '');
             dmp.diff_cleanupSemantic(titleDiffs);
@@ -122,6 +123,7 @@ export const updateNote = async (req, res, io) => {
                 baseVersion: 0
             });
         }
+        // Create new version if title or content changed
         if ((currentNote.isModified('title') || currentNote.isModified('content')) && lastVersion) {
             req.app.set('notesDrafts')[req.params.id] = null;
             const titleDiffs = dmp.diff_main(oldTitle, title);

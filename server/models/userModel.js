@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         maxlength: [128, "Password cannot exceed 128 characters"],
         match: [/^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]).{1,}$/, "Password must contain at least one uppercase letter, one number and one special character"],
     },
-    profilePicture: {
+    avatar: {
         type: String,
         default: "",
     },
@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+// hook to hash password before saving
 userSchema.pre("save", async function (next) {
     console.log("Pre-save hook triggered");
     if (!this.isModified("password")) return next();

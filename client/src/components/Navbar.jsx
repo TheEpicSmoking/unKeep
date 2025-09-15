@@ -62,7 +62,7 @@ export default function Navbar({ profile, loading }) {
           </Popover>
           <ButtonBase sx={{ display: 'flex', alignItems: 'center'}} onClick={handleClick}>
             <Typography sx={{ mr: "10px"}}>{profile.username}</Typography>
-            <CustomAvatar src={profile.profilePicture} variant="rounded" logoWidth={22} alt={profile.username} sx={{ border: `2px solid black`, outline: `3px solid rgb(255, 255, 255)`, mr: "6px", boxShadow: "3px 3px 0px 3px rgba(255, 255, 255, 0.5)" }}/>
+            <CustomAvatar src={profile.avatar} variant="rounded" logoWidth={22} alt={profile.username} sx={{ border: `2px solid black`, outline: `3px solid rgb(255, 255, 255)`, mr: "6px", boxShadow: "3px 3px 0px 3px rgba(255, 255, 255, 0.5)" }}/>
           </ButtonBase>
       </>
         ) : (

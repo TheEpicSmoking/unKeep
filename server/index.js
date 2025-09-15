@@ -37,15 +37,14 @@ const cursorsState = {};
 
 app.set('notesDrafts', notesDrafts);
 
+// Socket.io setup
 io.on("connection", (socket) => {
     console.log("New user connected");
-
     socket.on("join-note", (noteId) => {
         socket.join(noteId);
         console.log("Note drafts:", notesDrafts[noteId]);
         if (notesDrafts[noteId]) {
             console.log(`Loaded draft for note: ${noteId}`);
-            //send cursorstate without the user himself
             if (cursorsState[noteId] && socket.data.user) {
                 const { [socket.data.user]: _, ...otherCursors } = cursorsState[noteId];
                 socket.emit("note-init", notesDrafts[noteId], otherCursors);
@@ -101,6 +100,17 @@ io.on("connection", (socket) => {
     });
 });
 
+// Connect to MongoDB
+console.log(MONGO_URI);
+mongoose.connect(MONGO_URI).then(() => {
+    console.log('Connected to MongoDB');
+    server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+}).catch(err => {
+    console.error('MongoDB connection error:', err);
+});
+
 // Middlewares
 app.use(cors(
     {
@@ -114,21 +124,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-//logger middleware
+
+/* logger middleware
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next();
 });
-
-console.log(MONGO_URI);
-mongoose.connect(MONGO_URI).then(() => {
-    console.log('Connected to MongoDB');
-    server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
-}).catch(err => {
-    console.error('MongoDB connection error:', err);
-});
+ */
 
 // Routes
 app.use('/api/auth', authRoutes);

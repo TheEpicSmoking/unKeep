@@ -23,7 +23,7 @@ export default function Note({ children, profile}) {
       open={open}
     >
       <AuthFormWrapper title={user?.username} onClose={handleClose} logo={false} sx={{ width: 400, height: 450, pb: 9 }}>
-        <CustomAvatar variant="rounded" src={user?.profilePicture} alt={user?.username} key={user?._id + "_2"} color={"white"} sx={{ border: 0, outline: 3, outlineColor: 'primary.main', color: 'primary.main', width: "100%", height: "100%", borderRadius: 10 }} />
+        <CustomAvatar variant="rounded" src={user?.avatar} alt={user?.username} key={user?._id + "_2"} color={"white"} sx={{ border: 0, outline: 3, outlineColor: 'primary.main', color: 'primary.main', width: "100%", height: "100%", borderRadius: 10 }} />
       </AuthFormWrapper>
     </Modal>
     <Card color="secondary" variant="solid" sx={{mr: 3, mb: 3, width: '100%', boxShadow: "10px 10px 0px 2px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
@@ -42,11 +42,11 @@ export default function Note({ children, profile}) {
           max={5}
           variant="rounded"
           spacing={-12}>
-          <CustomAvatar src={children.author.profilePicture} alt={children.author.username} key={children.author._id} color={"white"} onClick={() => handleOpen(children.author)} sx={{ cursor: 'pointer' }}/>
+          <CustomAvatar src={children.author.avatar} alt={children.author.username} key={children.author._id} color={"white"} onClick={() => handleOpen(children.author)} sx={{ cursor: 'pointer' }}/>
           {children.collaborators
             .filter(collaborator => collaborator.permission === 'write')
             .map((collaborator) => (
-            <CustomAvatar key={collaborator.user._id} src={collaborator.user.profilePicture} alt={collaborator.user.username} color={"white"} onClick={() => handleOpen(collaborator.user)} sx={{ cursor: 'pointer' }}/>
+            <CustomAvatar key={collaborator.user._id} src={collaborator.user.avatar} alt={collaborator.user.username} color={"white"} onClick={() => handleOpen(collaborator.user)} sx={{ cursor: 'pointer' }}/>
           ))}
         </AvatarGroup>
         } action={profile._id === children.author._id && <IconButton size="small" sx={{mt:0.8}} color="primary" onClick={(e) => navigate(`/notes/${children._id}/settings`)}><TuneSharpIcon fontSize="large"/></IconButton>}/>
