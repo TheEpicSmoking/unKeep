@@ -90,11 +90,11 @@ export const updateNote = async (req, res, io) => {
         if (!currentNote) {
             return res.status(404).json({ error: 'Note not found' });
         }
-        if (!currentNote.author.equals(req.userId) && !currentNote.collaborators.some(collab => collab.user.equals(req.userId) && collab.permission === 'write')) {
-            return res.status(403).json({ error: 'You do not have permission to update this note' });
-        }
         const oldTitle = currentNote.title || '';
         const oldContent = currentNote.content || '';
+        if (!currentNote.author.equals(req.userId) && !(currentNote.collaborators.some(collab => collab.user.equals(req.userId) && collab.permission === 'write') && title === oldTitle)) {
+            return res.status(403).json({ error: 'You do not have permission to update this note' });
+        }
         console.log(oldContent, oldTitle);
         currentNote.title = title || oldTitle;
         currentNote.content = content || oldContent;

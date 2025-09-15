@@ -134,5 +134,5 @@ mongoose.connect(MONGO_URI).then(() => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes(io));
-app.use('/api/history', historyRoutes);
+app.use('/api/history', historyRoutes(io));
 app.use('/api/users', userRoutes);

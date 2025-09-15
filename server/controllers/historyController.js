@@ -51,7 +51,7 @@ export const getNoteHistory = async (req, res) => {
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
-        if (!note.author.equals(req.userId) && !note.collaborators.some(collab => collab.user.equals(req.userId))) {
+        if (!note.author.equals(req.userId)) {
             return res.status(403).json({ error: 'You do not have permission to view this note history' });
         }
         const version = req.query.v ? parseInt(req.query.v) : -1;
@@ -84,7 +84,7 @@ export const getNoteVersion = async (req, res) => {
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
-        if (!note.author.equals(req.userId) && !note.collaborators.some(collab => collab.user.equals(req.userId))) {
+        if (!note.author.equals(req.userId)) {
             return res.status(403).json({ error: 'You do not have permission to view this note version' });
         }
         if (version < 0) {
@@ -101,7 +101,7 @@ export const getNoteVersion = async (req, res) => {
     }
 }
 
-export const revertNote = async (req, res) => {
+export const revertNote = async (req, res, io) => {
     try {
         const noteId = req.params.id;
         let note = await Note.findById(noteId);
@@ -121,6 +121,8 @@ export const revertNote = async (req, res) => {
         }
         await note.save();
         await NoteHistory.deleteMany({ noteId, baseVersion: { $gt: version } });
+        req.app.set('notesDrafts')[req.params.id] = null;
+        io.to(req.params.id).emit("note-full-update", note);
         res.status(200).json({message: "Note reverted successfully", version: note.currentVersion});
     } catch (error) {
         console.error('Error reverting note:', error);

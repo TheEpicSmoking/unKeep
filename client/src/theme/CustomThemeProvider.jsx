@@ -12,9 +12,6 @@ const theme = createTheme({
 		primary: {
 			main:  '#000000ff',
 		},
-		secondary: {
-			main: '#D8BFD8',
-		},
 		error: {
 			main: '#ff4a4aff',
 		},
@@ -24,6 +21,7 @@ const theme = createTheme({
 		},
 	},
 	typography: {
+		//pixelated font
 		fontFamily: 'Roboto, sans-serif',
 		button: {
 			textTransform: 'none',

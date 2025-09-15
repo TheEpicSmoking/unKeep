@@ -32,7 +32,7 @@ export default function Dashboard() {
       setNotes(Array.isArray(fetchedNotes) ? fetchedNotes : [fetchedNotes])
     } catch (error) {
       console.error('Failed to fetch notes:', error);
-      if (error.response.status !== 401 && error.response.status !== 404) {
+      if ((error?.response?.status !== 401 && profile) && error?.response?.status !== 404) {
         setError(error);
       }
     }
@@ -43,17 +43,21 @@ export default function Dashboard() {
     useEffect(() => {
     let isMounted = true;
     setLoading(true);
+    fetchProfile();
     async function fetchProfile() {
       try {
         const myProfile = await getMyProfile();
         if (isMounted) setProfile(myProfile);
-      } catch (e) {
-        if (isMounted) setProfile(null);
+      } catch (error) {
+        if (isMounted) {
+          setError(error);
+          setProfile(null);
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
     }
-    fetchProfile();
+
     return () => { isMounted = false; };
   }, [getMyProfile]);
 

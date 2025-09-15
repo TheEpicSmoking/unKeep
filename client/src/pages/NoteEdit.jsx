@@ -3,6 +3,7 @@ import { Close } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
+import ErrorLog from "../components/ErrorLog.jsx";
 import TuneSharpIcon from '@mui/icons-material/TuneSharp';
 import VisibilitySharpIcon from '@mui/icons-material/VisibilitySharp';
 import useControlledNavigation from "../hooks/useConfrimNavigation.jsx";
@@ -24,17 +25,34 @@ export default function NoteEdit({ socket }) {
     const [canEdit, setCanEdit] = useState(false);
     const [userCount, setUserCount] = useState(0);
     const [unsaved, setUnsaved] = useState(false);
+    const [connected, setConnected] = useState(false);
+    const [errors, setErrors] = useState([]);
     const quillRef = useRef(null);
     const editorRef = useRef(null);
     const controlledNavigate = useControlledNavigation(userCount === 1 && unsaved);
 
-    const handleSave = () => {
+    const handleSave = async () => {
       const title = document.getElementById("noteTitle")?.value || note.title;
       const content = editorRef.current.getText();
       console.log(content);
-      updateNote(id, title, content);
+      try {
+        await updateNote(id, title, content);
+      } catch (error) {
+        const msg = error.response?.data?.message || error.response?.data?.error || 'Server error';
+        setErrors(Array.isArray(msg) ? msg : [msg])
+      }
       setUnsaved(false);
     };
+
+    const checkChanges = (n = note) => {
+      const title = document.getElementById("noteTitle")?.value || n.title;
+      const content = editorRef.current?.getText();
+      if (title !== n.title || content !== (n?.content ? n.content : "\n")) {
+        setUnsaved(true);
+      } else {
+        setUnsaved(false);
+      }
+    }
 
     const fetchNote = async () => {
       try {
@@ -69,23 +87,24 @@ export default function NoteEdit({ socket }) {
       setCanEdit(false);
       if (user && note) {
         console.log("refresh triggered");
-        if (user._id === note.author._id) {
+        if (user._id === note.author._id || user._id === note.author) {
           setIsAuthor(true);
           setCanEdit(true);
         }
         console.log(note.collaborators);
-        if (note.collaborators.some(collab => collab.user._id === user._id && collab.permission === 'write')) {
+        if (note.collaborators.some(collab => (collab.user._id === user._id || collab.user === user._id) && collab.permission === 'write')) {
           console.log("User has write permission");
           setCanEdit(true);
         }
         console.log("Connected to server");
         socket.emit("identify", { userId: user._id });
         socket.emit("join-note", id);
+        setConnected(true);
       }
       console.log(user, note);
       return () => {
-        socket.emit("leave-note", id);
-        console.log("Disconnected from server");
+          socket.emit("leave-note", id);
+          console.log("Disconnected from server");
       };
     }, [user, note]);
 
@@ -102,7 +121,6 @@ export default function NoteEdit({ socket }) {
       }});
       editorRef.current.setText(note.content);
       const cursors = editorRef.current.getModule("cursors");
-      const activeCursors = {};
 
       socket.on("note-init", (note, cursorList) => {
         editorRef.current.updateContents(note);
@@ -123,10 +141,10 @@ export default function NoteEdit({ socket }) {
       });
 
       editorRef.current.on("text-change", (delta, oldDelta, source) => {
-        setUnsaved(true);
+        checkChanges();
+        setErrors(null);
         if (source !== "user") return;
         socket.emit("note-change", id, delta );
-        const range = editorRef.current.getSelection();
       });
     
     editorRef.current.root.addEventListener("focusout", () => {
@@ -159,12 +177,15 @@ export default function NoteEdit({ socket }) {
       });
 
       socket.on("note-full-update", (newNote) => {
+        console.log("FULL UPDATE", newNote);
         setNote(newNote);
-        setUnsaved(false);
+        setErrors(null);
+        checkChanges(newNote);
       });
 
     return () => {
       editorRef.current.root.removeEventListener("focusout", () => {});
+      editorRef.current.root.removeEventListener("focusin", () => {});
       socket.off("note-init");
       socket.off("note-update");
       socket.off("cursor-update");
@@ -174,6 +195,11 @@ export default function NoteEdit({ socket }) {
     }
 
     }, [user, note]);
+
+  useEffect(() => {
+    if (!connected) return;
+    editorRef.current.enable(canEdit);
+  }, [connected, canEdit]);
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -221,7 +247,7 @@ export default function NoteEdit({ socket }) {
           id="noteTitle"
           variant="standard"
           defaultValue={loading ? 'Loading...' : note?.title || ''}
-          onChange={(e) => setUnsaved(true)}
+          onChange={() => {checkChanges(); setErrors(null);}}
           type="text"
           sx={{ width: '90%',
             "& .MuiInputBase-input": {fontSize: '1.4rem'}
@@ -237,7 +263,8 @@ export default function NoteEdit({ socket }) {
         {userCount} <VisibilitySharpIcon sx={{ fontSize: "medium", position: 'relative', top: 3 }} />
       </Typography>
       <Box ref={quillRef} component="div" sx={{ height: '100%', marginTop: 2, "&.ql-container": { border: '1px solid rgb(0, 0, 0, 0.5)' }, "&.ql-container:focus-within": { border: '1px solid' }}} />
-      {canEdit && <Button variant="contained" fullWidth onClick={handleSave} sx={{ marginTop: 2 }}>Save Note</Button>}
+      {errors && <ErrorLog errors={errors} />}
+      {canEdit && <Button variant="contained" fullWidth onClick={handleSave} sx={{ marginTop: 2 }} disabled={!unsaved || !connected}>Save Changes</Button>}
     </Stack>
   )
 }

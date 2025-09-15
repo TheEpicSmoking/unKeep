@@ -65,7 +65,7 @@ export const getUserProfile = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
     try {
         console.log(req.body)
-        const { username, email, avatar = "" } = req.body;
+        const { username, email, avatar = null } = req.body;
         const user = await User.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -76,8 +76,8 @@ export const updateUserProfile = async (req, res) => {
         user.username = username;
         user.email = email;
 
-        if (avatar === "remove") {
-            user.profilePicture = " ";
+        if (avatar === "") {
+            user.profilePicture = "";
         }
 
         if (req.file) {

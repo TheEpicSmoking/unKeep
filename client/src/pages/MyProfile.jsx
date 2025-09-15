@@ -48,8 +48,8 @@ export default function MyProfile() {
     const email = document.getElementById('email').value
 
     try {
-      if (avatarFile === "remove") {
-        await updateProfile({ username, email, avatar: "remove" });
+      if (avatarFile === null) {
+        await updateProfile({ username, email, avatar: "" });
       } else if (avatarFile) {
         const formData = new FormData();
         formData.append('username', username);
@@ -131,8 +131,8 @@ export default function MyProfile() {
         {avatar && <IconButton
           sx={{ position:"absolute", top: 3, right: {xs: 43, md: 23}, color: "black", zIndex: 1, bgcolor: "rgba(255, 255, 255, 0.1)", '&:hover': { bgcolor: "rgba(255, 255, 255, 0.2)"} }}
           onClick={() => {
-            setAvatarFile("remove");
-            setAvatar("");3
+            setAvatarFile(null);
+            setAvatar("");
           }}
           aria-label="close"
         >

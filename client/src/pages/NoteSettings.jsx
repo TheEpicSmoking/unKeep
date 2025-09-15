@@ -284,7 +284,7 @@ export default function MyProfile() {
           </Box>
         </TabPanel>
         <TabPanel value="2" sx={{p:0, pt:2, minHeight:0, gap:2, height:'100%',flexDirection: 'column', display: (tabValue === "2" ? 'flex' : 'none')}}>
-          <OutlinedInput placeholder="Add a collaborator" value={collaboratorQuery} sx={{borderRadius: 0, width: '100%' }} onChange={(e) => setCollaboratorQuery(e.target.value)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} ref={anchorElRef} />
+          <OutlinedInput placeholder="Search collaborators by username..." value={collaboratorQuery} sx={{borderRadius: 0, width: '100%' }} onChange={(e) => setCollaboratorQuery(e.target.value)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} ref={anchorElRef} />
           <Popper open={focused && (userList.length > 0 || userLoading)} anchorEl={anchorElRef.current} sx={{ zIndex: 1, width: anchorElRef.current ? anchorElRef.current.clientWidth : null, bgcolor: 'background.paper', boxShadow: "15px 15px 0px 0px", border: 2, borderRadius: 0, maxHeight: 200, overflowY: 'auto' }}>
               <List sx={{ p: 0, m: 0 }}>
                 {userList.map((option) => (
