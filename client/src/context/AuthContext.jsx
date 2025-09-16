@@ -4,7 +4,7 @@ import axios from 'axios'
 const AuthContext = createContext()
 
 const api = axios.create({
-  baseURL: `${process.env.BACKEND_URL}/api/`,
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}api/`,
   withCredentials: true
 })
 
