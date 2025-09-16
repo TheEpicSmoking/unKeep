@@ -31,7 +31,7 @@ export const getUsers = async (req, res) => {
         }
         res.status(200).json(sortedUsers);
     } catch (error) {
-        console.error('Error fetching users:', error);
+        //console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -44,7 +44,7 @@ export const getUser = async (req, res) => {
         }
         res.status(200).json(user);
     } catch (error) {
-        console.error('Error fetching users:', error);
+        //console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -57,14 +57,14 @@ export const getMyUser = async (req, res) => {
         }
         res.status(200).json(user);
     } catch (error) {
-        console.error('Error fetching user profile:', error);
+        //console.error('Error fetching user profile:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 
 export const updateMyUser = async (req, res) => {
     try {
-        console.log(req.body)
+        //console.log(req.body)
         const { username, email, avatar = null } = req.body;
         const user = await User.findById(req.userId);
         if (!user) {
@@ -77,14 +77,14 @@ export const updateMyUser = async (req, res) => {
         user.email = email;
         //Delete previous avatar if changed or removed
         if (user.avatar && avatar === "" || (req.file && req.file.fieldname === "avatar")) {
-            console.log(user.avatar);
+            //console.log(user.avatar);
             try {
                 const publicId = user.avatar.split('/').pop().split('.')[0];
-                console.log('Deleting previous avatar with public ID:', publicId);
+                //console.log('Deleting previous avatar with public ID:', publicId);
                 await cloudinary.uploader.destroy(`Avatars/${publicId}`);
                 user.avatar = "";
             } catch (error) {
-                console.error('Error deleting previous avatar:', error);
+                //console.error('Error deleting previous avatar:', error);
                 return res.status(500).json({ error: 'Failed to delete previous avatar' });
             }
         }
@@ -105,7 +105,7 @@ export const updateMyUser = async (req, res) => {
                 const result = await uploadPromise;
                 user.avatar = result.secure_url;
             } catch (uploadError) {
-                console.error('Cloudinary upload error:', uploadError);
+                //console.error('Cloudinary upload error:', uploadError);
                 return res.status(400).json({ error: 'Failed to upload avatar' });
             }
         }
@@ -124,7 +124,7 @@ export const updateMyUser = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error updating profile:', error);
+        //console.error('Error updating profile:', error);
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(e => e.message);
             return res.status(400).json({ error: errors });
@@ -165,16 +165,17 @@ export const deleteMyUser = async (req, res) => {
         await Note.updateMany({ "collaborators.user": req.userId }, { $pull: { collaborators: { user: req.userId } } });
         res.clearCookie('refreshToken', {
             httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            partitioned: process.env.NODE_ENV === 'production',
         });
         RefreshToken.deleteOne({ token: req.cookies.refreshToken })
             .then(() => {
-                console.log('Refresh token deleted successfully');
+                //console.log('Refresh token deleted successfully');
             })
         res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-        console.error('Error deleting user:', error);
+        //console.error('Error deleting user:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }

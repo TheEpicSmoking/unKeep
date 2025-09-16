@@ -25,7 +25,7 @@ export default function Navbar({ profile, loading, refresh }) {
       await logout();
       navigate('/login')
     } catch (error) {
-      console.error('Failed to logout:', error);
+      //console.error('Failed to logout:', error);
     }
   };
 

@@ -39,7 +39,7 @@ export default function NoteEdit({ socket }) {
         setNote(note);
       } catch (error) {
         navigate("/");
-        console.error("Error fetching note:", error);
+        //console.error("Error fetching note:", error);
       }
       finally { setLoading(false); }
     };
@@ -51,7 +51,7 @@ export default function NoteEdit({ socket }) {
         setUser(profile);
       } catch (error) {
         navigate("/");
-        console.error("Error fetching profile:", error);
+        //console.error("Error fetching profile:", error);
       }
       finally { setLoading(false); }
     };
@@ -59,7 +59,7 @@ export default function NoteEdit({ socket }) {
     const handleSave = async () => {
       const title = document.getElementById("noteTitle")?.value || note.title;
       const content = editorRef.current.getText();
-      console.log(content);
+      //console.log(content);
       try {
         await updateNote(id, title, content);
       } catch (error) {
@@ -72,7 +72,7 @@ export default function NoteEdit({ socket }) {
     const checkChanges = (n = note) => {
       const title = document.getElementById("noteTitle")?.value || n.title;
       const content = editorRef.current?.getText();
-      console.log("CHECK CHANGES", {title, content, originalTitle: n.title, originalContent: n?.content ? n.content : "\n"});
+      //console.log("Check changes", {title, content, originalTitle: n.title, originalContent: n?.content ? n.content : "\n"});
       if (title !== n.title || content !== (n?.content ? n.content : "\n")) {
         setUnsaved(true);
       } else {
@@ -89,25 +89,25 @@ export default function NoteEdit({ socket }) {
     useEffect(() => {
       setCanEdit(false);
       if (user && note) {
-        console.log("refresh triggered");
+        //console.log("refresh triggered");
         if (user._id === note.author._id || user._id === note.author) {
           setIsAuthor(true);
           setCanEdit(true);
         }
-        console.log(note.collaborators);
+        //console.log(note.collaborators);
         if (note.collaborators.some(collab => (collab.user._id === user._id || collab.user === user._id) && collab.permission === 'write')) {
-          console.log("User has write permission");
+          //console.log("User has write permission");
           setCanEdit(true);
         }
-        console.log("Connected to server");
+        //console.log("Connected to server");
         socket.emit("identify", { userId: user._id });
         socket.emit("join-note", id);
         setConnected(true);
       }
-      console.log(user, note);
+      //console.log(user, note);
       return () => {
           socket.emit("leave-note", id);
-          console.log("Disconnected from server");
+          //console.log("Disconnected from server");
       };
     }, [user, note]);
 
@@ -129,7 +129,7 @@ export default function NoteEdit({ socket }) {
       socket.on("note-init", (note, cursorList) => {
         editorRef.current.updateContents(note);
         Object.entries(cursorList).forEach(([userId, cursor]) => {
-          console.log(userId, cursor);
+          //console.log(userId, cursor);
           cursors.createCursor(userId, cursor.user.username, stringToColor(cursor.user.username));
           cursors.moveCursor(userId, cursor.range);
         });
@@ -147,12 +147,12 @@ export default function NoteEdit({ socket }) {
       });
 
       socket.on("note-update", (delta) => {
-        console.log(delta);
+        //console.log(delta);
         editorRef.current.updateContents(delta);
       });
           
       editorRef.current.root.addEventListener("focusout", () => {
-        console.log("blur event dal root");
+        //console.log("blur event dal root");
         socket.emit("cursor-change", id, null, user);
       });
 
@@ -169,14 +169,14 @@ export default function NoteEdit({ socket }) {
 
       socket.on("cursor-update", ( recievedUser, range ) => {
         if (recievedUser.username && recievedUser._id && recievedUser._id !== user._id) {
-          console.log("cursor update received for ", recievedUser.username, recievedUser, range);
+          //console.log("cursor update received for ", recievedUser.username, recievedUser, range);
           cursors.createCursor(recievedUser._id, recievedUser.username, stringToColor(recievedUser.username));
           cursors.moveCursor(recievedUser._id, range);
         }
       });
 
       socket.on("note-full-update", (newNote, revert) => {
-        console.log("FULL UPDATE", newNote);
+        //console.log("Note full update", newNote);
         setNote(newNote);
         setErrors(null);
         if (revert) {
@@ -219,7 +219,7 @@ export default function NoteEdit({ socket }) {
   }, [userCount]);
 
   return (
-    <Stack sx={{ bgcolor: 'background.paper', position:"absolute", top:"50%", left:"50%", transform:"translate(-50%, -50%)", padding: 2, width: '85%', maxWidth: 800, height: {xs: '75%', md: '90%'}, boxShadow: "20px 20px 0px 0px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
+    <Stack sx={{ bgcolor: 'background.paper', position:"absolute", top:"50%", left:"50%", transform:"translate(-50%, -50%)", padding: 2, width: '85%', maxWidth: 800, height: '90%', boxShadow: "20px 20px 0px 0px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
       <IconButton
         sx={{ position:"absolute", top: 5, right: 5}}
         onClick={() => controlledNavigate("/")}

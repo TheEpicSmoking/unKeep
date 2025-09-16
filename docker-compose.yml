@@ -1,0 +1,30 @@
+services:
+  unkeep-frontend:
+    image: unkeep-frontend:latest
+    stdin_open: true
+    ports:
+      - "8080:8080"
+    networks:
+      - unkeep
+  unkeep-backend:
+    image: unkeep-backend:latest
+    ports:
+      - "8000:8000"
+    networks:
+      - unkeep
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - unkeep
+networks:
+  unkeep:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local

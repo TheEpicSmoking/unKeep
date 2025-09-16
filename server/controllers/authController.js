@@ -19,12 +19,12 @@ const generateToken = (user) => {
 export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        console.log('Registration data:', { username, email, password });
+        //console.log('Registration data:', { username, email, password });
         const user = new User({ username, email, password });
         await user.save();
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        console.error('Registration error:', error);
+        //console.error('Registration error:', error);
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(e => e.message);
             return res.status(400).json({ error: errors });
@@ -76,7 +76,7 @@ export const login = async (req, res) => {
             accessToken
         });
     } catch (error) {
-        console.error('Login error:', error);
+        //console.error('Login error:', error);
         res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -91,11 +91,11 @@ export const logout = (req, res) => {
         });
         RefreshToken.deleteOne({ token: req.cookies.refreshToken })
             .then(() => {
-                console.log('Refresh token deleted successfully');
+                //console.log('Refresh token deleted successfully');
             })
         res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-        console.error('Logout error:', error);
+        //console.error('Logout error:', error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
@@ -115,7 +115,7 @@ export const changePassword = async (req, res) => {
         await user.save();
         res.status(200).json({ message: 'Password changed successfully' });
     } catch (error) {
-        console.error('Error changing password:', error);
+        //console.error('Error changing password:', error);
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(e => e.message);
             return res.status(400).json({ error: errors });
@@ -142,7 +142,7 @@ export const refreshAccessToken = async (req, res) => {
         const { accessToken } = generateToken(user);
         res.status(200).json({accessToken});
     } catch (error) {
-        console.error('Refresh token error:', error);
+        //console.error('Refresh token error:', error);
         res.status(500).json({ error: "Internal server error" });
     }
 }

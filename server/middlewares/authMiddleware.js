@@ -9,7 +9,7 @@ export const verifyToken = (req, res, next) => {
         const token = authorizationHeader.split(' ')[1];
         jwt.verify(token, process.env.ACCESS_JWT_SECRET, (err, decoded) => {
             if (err) {
-                console.error('Token verification error:', err.name)
+                //console.error('Token verification error:', err.name)
 
                 if (err.name === 'TokenExpiredError') {
                 return res.status(401).json({ error: 'Token expired' })
@@ -17,14 +17,14 @@ export const verifyToken = (req, res, next) => {
                 if (err.name === 'JsonWebTokenError') {
                     return res.status(401).json({ error: 'Invalid token' })
                 }
-                console.error('Token verification error:', err);
+                //console.error('Token verification error:', err);
                 return res.status(403).json({ error: 'Forbidden' });
             }
             req.userId = decoded.id;
             next();
         });
     } catch (error) {
-        console.error('Error in verifyToken middleware:', error);
+        //console.error('Error in verifyToken middleware:', error);
         res.status(500).json({ error: 'Internal server error' });
     }  
 };

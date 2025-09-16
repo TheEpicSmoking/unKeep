@@ -37,7 +37,7 @@ export default function MyProfile({ socket }) {
       const profileData = await getMyProfile();
       setProfile(profileData);
     } catch (error) {
-      console.error('Failed to fetch profile:', error);
+      //console.error('Failed to fetch profile:', error);
     }
   };
 
@@ -46,7 +46,7 @@ export default function MyProfile({ socket }) {
       const history = await getNoteHistory(id);
       setNoteHistory(history);
     } catch (error) {
-      console.error('Failed to fetch note history:', error);
+      //console.error('Failed to fetch note history:', error);
       setNoteHistory([]);
     }
   }
@@ -58,7 +58,7 @@ export default function MyProfile({ socket }) {
       const fetchedNote = await getNote(id);
       setNote(fetchedNote);
     } catch (error) {
-      console.error('Failed to fetch note:', error);
+      //console.error('Failed to fetch note:', error);
       const msg = error.response?.data?.message || error.response?.data?.error || 'Server error'
       setErrors(Array.isArray(msg) ? msg : [msg])
     } finally {
@@ -78,7 +78,7 @@ export default function MyProfile({ socket }) {
       await updateNoteSettings(id, note?.title, collaborators, tags);
       fetchNote();
     } catch (error) {
-      console.error('Failed to update note settings:', error);
+      //console.error('Failed to update note settings:', error);
       const msg = error.response?.data?.message || error.response?.data?.error || 'Server error'
       setErrors(Array.isArray(msg) ? msg : [msg])
     } finally {
@@ -92,7 +92,7 @@ export default function MyProfile({ socket }) {
       await deleteNote(id);
       navigate("/");
     } catch (error) {
-      console.error("Failed to delete note:", error);
+      //console.error("Failed to delete note:", error);
       setErrors(error);
     } finally {
       setLoading(false);

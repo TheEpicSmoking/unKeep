@@ -27,7 +27,7 @@ export default function MyProfile() {
       setAvatar(profile.avatar)
       setAvatarFile(null)
     } catch (error) {
-      console.error('Failed to fetch profile:', error);
+      //console.error('Failed to fetch profile:', error);
       setErrors(error)
     }
     finally {
@@ -83,7 +83,7 @@ export default function MyProfile() {
       await deleteProfile(document.getElementById('migrateNotes').checked);
       navigate("/");
     } catch (error) {
-      console.error("Failed to delete account:", error);
+      //console.error("Failed to delete account:", error);
       setErrors(error);
     } finally {
       setLoading(false);

@@ -39,12 +39,12 @@ app.set('notesDrafts', notesDrafts);
 
 // Socket.io setup
 io.on("connection", (socket) => {
-    console.log("New user connected");
+    //console.log("New user connected");
     socket.on("join-note", (noteId) => {
         socket.join(noteId);
-        console.log("Note drafts:", notesDrafts[noteId]);
+        //console.log("Note drafts:", notesDrafts[noteId]);
         if (notesDrafts[noteId]) {
-            console.log(`Loaded draft for note: ${noteId}`);
+            //console.log(`Loaded draft for note: ${noteId}`);
             if (cursorsState[noteId] && socket.data.user) {
                 const { [socket.data.user]: _, ...otherCursors } = cursorsState[noteId];
                 socket.emit("note-init", notesDrafts[noteId], otherCursors);
@@ -53,16 +53,16 @@ io.on("connection", (socket) => {
             }
         }
         io.to(noteId).emit("user-count", io.sockets.adapter.rooms.get(noteId)?.size || 0);
-        console.log(`User joined note: ${noteId}`);
+        //console.log(`User joined note: ${noteId}`);
     });
 
     socket.on("identify", ({ userId }) => {
         socket.data.user = userId;
-        console.log(`User identified: ${userId}`);
+        //console.log(`User identified: ${userId}`);
     });
 
     socket.on("disconnect", () => {
-        console.log("User disconnected");
+        //console.log("User disconnected");
     });
 
     socket.on("leave-note", (noteId) => {
@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
                 const size = (io.sockets.adapter.rooms.get(room)?.size || 1) - 1;
                 if (size === 0 && notesDrafts[room]) {
                     notesDrafts[room] = null;
-                    console.log(`Cleared draft for note: ${room}`);
+                    //console.log(`Cleared draft for note: ${room}`);
                 }
                 else{
                     socket.to(room).emit("cursor-remove", { userId: socket.data.user });
@@ -80,18 +80,18 @@ io.on("connection", (socket) => {
             }
         }
         socket.leave(noteId);
-        console.log(`User left note: ${noteId}`);
+        //console.log(`User left note: ${noteId}`);
     });
 
     socket.on("note-change", (noteId, delta) => {
         notesDrafts[noteId] = new Delta(notesDrafts[noteId]).compose(new Delta(delta));
-        console.log("note change event received");
+        //console.log("note change event received");
         
         socket.broadcast.to(noteId).emit("note-update", delta);
     });
 
     socket.on("cursor-change", (noteId, cursor, user) => {
-        console.log(`Cursor changed in note ${noteId} by user ${user._id}:`, cursor);
+        //console.log(`Cursor changed in note ${noteId} by user ${user._id}:`, cursor);
         if (!cursorsState[noteId]) cursorsState[noteId] = {};
         if (user._id) {
             cursorsState[noteId][user._id] = { user: user, range: cursor };
@@ -101,13 +101,13 @@ io.on("connection", (socket) => {
 });
 
 // Connect to MongoDB
-console.log(MONGO_URI);
+//console.log(MONGO_URI);
 mongoose.connect(MONGO_URI).then(() => {
-    console.log('Connected to MongoDB');
+    // console.log('Connected to MongoDB');
     server.listen(PORT, () => {
 });
 }).catch(err => {
-    console.error('MongoDB connection error:', err);
+    //console.error('MongoDB connection error:', err);
 });
 
 // Middlewares
@@ -124,7 +124,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* logger middleware
+/* logger middlewarez
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next();

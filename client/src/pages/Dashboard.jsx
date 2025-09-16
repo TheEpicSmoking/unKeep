@@ -20,7 +20,7 @@ export default function Dashboard() {
       const newNote = await createNote()
       navigate(`/notes/${newNote.id}`)
     } catch (error) {
-      console.error('Failed to create note:', error)
+      //console.error('Failed to create note:', error)
       setError(error)
     }
   }
@@ -31,7 +31,7 @@ export default function Dashboard() {
       const fetchedNotes = await getNotes()
       setNotes(Array.isArray(fetchedNotes) ? fetchedNotes : [fetchedNotes])
     } catch (error) {
-      console.error('Failed to fetch notes:', error);
+      //console.error('Failed to fetch notes:', error);
       if ((error?.response?.status !== 403 && !profile) && error?.response?.status !== 404) {
         setError(error);
       }

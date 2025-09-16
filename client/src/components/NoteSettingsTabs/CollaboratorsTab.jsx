@@ -25,7 +25,7 @@ export default function CollaboratorsTab({
             const filteredUsers = fetchedUsers.filter(user => !excludeIds.includes(user._id));
             setUserList(filteredUsers);
         } catch (error) {
-            console.error('Failed to fetch users:', error);
+            //console.error('Failed to fetch users:', error);
             setUserList([]);
         } finally {
             setUserLoading(false);
@@ -36,7 +36,7 @@ export default function CollaboratorsTab({
     const delayDebounceFn = setTimeout(() => {
         if (collaboratorQuery?.length >= 2) {
             fetchUsers(collaboratorQuery);
-            console.log(userList);
+            //console.log(userList);
         }
     }, 300)
 

@@ -10,7 +10,7 @@ export const createNote = async (req, res) => {
         if (!title) {
             return res.status(400).json({ error: 'Title is required' });
         }
-        console.log('Creating note with data:', { title, content, collaborators, tags });
+        //console.log('Creating note with data:', { title, content, collaborators, tags });
         const note = await Note.create({
             author: req.userId,
             title,
@@ -20,7 +20,7 @@ export const createNote = async (req, res) => {
         });
         res.status(201).json({message: "Note created successfully", id: note._id});
     } catch (error) {
-        console.error('Error creating note:', error);
+        //console.error('Error creating note:', error);
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(e => e.message);
             return res.status(400).json({ error: errors });
@@ -30,7 +30,7 @@ export const createNote = async (req, res) => {
 }
 
 export const getNotes = async (req, res) => {
-    console.log("Fetching notes for user:", req.userId);
+    //console.log("Fetching notes for user:", req.userId);
     try {
         let notes = await Note.find({
             $or: [
@@ -60,7 +60,7 @@ export const getNotes = async (req, res) => {
         }
         res.status(200).json(filteredNotes);
     } catch (error) {
-        console.error('Error fetching notes:', error);
+        //console.error('Error fetching notes:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -74,12 +74,12 @@ export const getNote = async (req, res) => {
             return res.status(404).json({ error: 'Note not found' });
         }
         if (!note.author.equals(req.userId) && !note.collaborators.some(collab => collab.user.equals(req.userId))) {
-            console.log('User does not have permission to view this note:', req.userId, note.author);
+            //console.log('User does not have permission to view this note:', req.userId, note.author);
             return res.status(403).json({ error: 'You do not have permission to view this note' });
         }
         res.status(200).json(note);
     } catch (error) {
-        console.error('Error fetching note:', error);
+        //console.error('Error fetching note:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -96,7 +96,7 @@ export const updateNote = async (req, res, io) => {
         if (!currentNote.author.equals(req.userId) && !(currentNote.collaborators.some(collab => collab.user.equals(req.userId) && collab.permission === 'write') && title === oldTitle)) {
             return res.status(403).json({ error: 'You do not have permission to update this note' });
         }
-        console.log(oldContent, oldTitle);
+        //console.log(oldContent, oldTitle);
         currentNote.title = title || oldTitle;
         currentNote.content = content || oldContent;
         currentNote.collaborators = collaborators || currentNote.collaborators;
@@ -144,10 +144,10 @@ export const updateNote = async (req, res, io) => {
         }
         await Note.findByIdAndUpdate(req.params.id, currentNote);
         io.to(req.params.id).emit("note-full-update", currentNote);
-        console.log(`Note ${req.params.id} updated by user ${req.userId}`);
+        //console.log(`Note ${req.params.id} updated by user ${req.userId}`);
         res.status(200).json({message: "Note updated successfully"});
     } catch (error) {
-        console.error('Error updating note:', error);
+        //console.error('Error updating note:', error);
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(e => e.message);
             return res.status(400).json({ error: errors });
@@ -169,7 +169,7 @@ export const deleteNote = async (req, res) => {
         await NoteVersion.deleteMany({ noteId: req.params.id });
         res.status(200).json({message: "Note deleted successfully"});
     } catch (error) {
-        console.error('Error deleting note:', error);
+        //console.error('Error deleting note:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }

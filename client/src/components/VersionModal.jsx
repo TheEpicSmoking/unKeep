@@ -10,7 +10,7 @@ export default function versionModal({ open, onClose, version, note, fetchNote, 
       await revertNoteToVersion(id, versionId);
       fetchNote();
     } catch (error) {
-      console.error('Failed to revert note to version:', error);
+      //console.error('Failed to revert note to version:', error);
     }
   };
 
@@ -19,7 +19,7 @@ export default function versionModal({ open, onClose, version, note, fetchNote, 
       await rebaseNoteToVersion(id, versionId);
       fetchNote();
     } catch (error) {
-      console.error('Failed to rebase note to version:', error);
+      //console.error('Failed to rebase note to version:', error);
     }
   };
   
