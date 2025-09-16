@@ -142,7 +142,7 @@ export const updateNote = async (req, res, io) => {
             });
             currentNote.currentVersion += 1;
         }
-        await currentNote.save();
+        await Note.findByIdAndUpdate(req.params.id, currentNote);
         io.to(req.params.id).emit("note-full-update", currentNote);
         console.log(`Note ${req.params.id} updated by user ${req.userId}`);
         res.status(200).json({message: "Note updated successfully"});

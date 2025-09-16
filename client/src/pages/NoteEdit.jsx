@@ -1,16 +1,17 @@
-import { Box, Button, Stack, TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Slide, IconButton} from "@mui/material";
+import { Box, Button, Stack, Typography, IconButton} from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import ErrorLog from "../components/ErrorLog.jsx";
-import TuneSharpIcon from '@mui/icons-material/TuneSharp';
 import VisibilitySharpIcon from '@mui/icons-material/VisibilitySharp';
 import useControlledNavigation from "../hooks/useConfrimNavigation.jsx";
 import Quill from "quill";
 import QuillCursors from "quill-cursors";
 import "quill/dist/quill.snow.css"; 
 import { stringToColor } from "../components/CustomAvatar.jsx";
+import UnsavedDialog from "../components/UnsavedDialog.jsx";
+import NoteTitleBar from "../components/NoteTitleBar.jsx";
 
 Quill.register("modules/cursors", QuillCursors);
 
@@ -30,30 +31,6 @@ export default function NoteEdit({ socket }) {
     const quillRef = useRef(null);
     const editorRef = useRef(null);
     const controlledNavigate = useControlledNavigation(userCount === 1 && unsaved);
-
-    const handleSave = async () => {
-      const title = document.getElementById("noteTitle")?.value || note.title;
-      const content = editorRef.current.getText();
-      console.log(content);
-      try {
-        await updateNote(id, title, content);
-      } catch (error) {
-        const msg = error.response?.data?.message || error.response?.data?.error || 'Server error';
-        setErrors(Array.isArray(msg) ? msg : [msg])
-      }
-      setUnsaved(false);
-    };
-
-    const checkChanges = (n = note) => {
-      const title = document.getElementById("noteTitle")?.value || n.title;
-      const content = editorRef.current?.getText();
-      console.log("CHECK CHANGES", {title, content, originalTitle: n.title, originalContent: n?.content ? n.content : "\n"});
-      if (title !== n.title || content !== (n?.content ? n.content : "\n")) {
-        setUnsaved(true);
-      } else {
-        setUnsaved(false);
-      }
-    }
 
     const fetchNote = async () => {
       try {
@@ -79,11 +56,36 @@ export default function NoteEdit({ socket }) {
       finally { setLoading(false); }
     };
 
+    const handleSave = async () => {
+      const title = document.getElementById("noteTitle")?.value || note.title;
+      const content = editorRef.current.getText();
+      console.log(content);
+      try {
+        await updateNote(id, title, content);
+      } catch (error) {
+        const msg = error.response?.data?.message || error.response?.data?.error || 'Server error';
+        setErrors(Array.isArray(msg) ? msg : [msg])
+      }
+      setUnsaved(false);
+    };
+
+    const checkChanges = (n = note) => {
+      const title = document.getElementById("noteTitle")?.value || n.title;
+      const content = editorRef.current?.getText();
+      console.log("CHECK CHANGES", {title, content, originalTitle: n.title, originalContent: n?.content ? n.content : "\n"});
+      if (title !== n.title || content !== (n?.content ? n.content : "\n")) {
+        setUnsaved(true);
+      } else {
+        setUnsaved(false);
+      }
+    }
+
     useEffect(() => {
       fetchProfile();
       fetchNote();
     }, []);
 
+    // Check if the user can edit and join the note room
     useEffect(() => {
       setCanEdit(false);
       if (user && note) {
@@ -109,10 +111,11 @@ export default function NoteEdit({ socket }) {
       };
     }, [user, note]);
 
+    // Initialize Quill editor and set up socket event listeners
     useEffect(() => {
       if (!user || !note) return;
       editorRef.current = new Quill(quillRef.current, {
-        theme: "snow",
+        theme: "bubble",
         modules: {
           toolbar: false,
           cursors: true,
@@ -136,33 +139,28 @@ export default function NoteEdit({ socket }) {
         setUserCount(count);
       });
 
-      socket.on("disconnect", () => {
-        console.log("Disconnected from server");
-        socket.emit("leave-note", id);
-      });
-
       editorRef.current.on("text-change", (delta, oldDelta, source) => {
         checkChanges();
         setErrors(null);
         if (source !== "user") return;
         socket.emit("note-change", id, delta );
       });
-    
-    editorRef.current.root.addEventListener("focusout", () => {
-      console.log("blur event dal root");
-      socket.emit("cursor-change", id, null, user);
-    });
 
-    editorRef.current.root.addEventListener("focusin", () => {
-      const range = editorRef.current.getSelection();
-      socket.emit("cursor-change", id, range, user);
-    });
-      
       socket.on("note-update", (delta) => {
         console.log(delta);
         editorRef.current.updateContents(delta);
       });
+          
+      editorRef.current.root.addEventListener("focusout", () => {
+        console.log("blur event dal root");
+        socket.emit("cursor-change", id, null, user);
+      });
 
+      editorRef.current.root.addEventListener("focusin", () => {
+        const range = editorRef.current.getSelection();
+        socket.emit("cursor-change", id, range, user);
+      });
+      
       editorRef.current.on("selection-change", ( range, oldRange, source) => {
         if (user && oldRange !== range) {
           socket.emit("cursor-change", id, range, user);
@@ -196,16 +194,17 @@ export default function NoteEdit({ socket }) {
       socket.off("cursor-update");
       socket.off("note-full-update");
       socket.off("user-count");
-      socket.off("disconnect");
     }
 
     }, [user, note]);
 
+  // Enable/disable editor in real-time based on permissions
   useEffect(() => {
     if (!connected) return;
     editorRef.current.enable(canEdit);
   }, [connected, canEdit]);
 
+  // Warn user of unsaved changes when trying to close tab or refresh if is the only one editing
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (userCount === 1) {
@@ -228,42 +227,19 @@ export default function NoteEdit({ socket }) {
       >
           <Close sx={{width: "4vw", height: "4vw", maxWidth:"25px", maxHeight:"25px", color: "black"}}/>
       </IconButton>
-      <Dialog
-        disableScrollLock
-        open={controlledNavigate.pending}
-        slots={{ transition: Slide }}
-        slotProps={{ paper: { sx: { boxShadow: "20px 20px 0px 0px", outline: 3, outlineColor: 'primary.main', borderRadius: 0}}}}
-      >
-        <DialogTitle>Unsaved Changes</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You have unsaved changes. Do you want to leave without saving?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={controlledNavigate.confirm} sx={{ color: 'error.main' }}>Don't Save</Button>
-            <Button onClick={controlledNavigate.cancel}>Cancel</Button>
-            <Button onClick={() => {handleSave(); controlledNavigate.confirm();}}>Save</Button>
-          </DialogActions>
-      </Dialog>
-      {isAuthor ? (
-        <>
-        <TextField
-          id="noteTitle"
-          variant="standard"
-          defaultValue={loading ? 'Loading...' : note?.title || ''}
-          onChange={() => {checkChanges(); setErrors(null);}}
-          type="text"
-          sx={{ width: '90%',
-            "& .MuiInputBase-input": {fontSize: '1.4rem'}
-           }}
-        />
-        <IconButton size="small" sx={{position: 'absolute', top: 43, right: 7}} color="primary" onClick={(e) => controlledNavigate(`/notes/${note._id}/settings`)}><TuneSharpIcon fontSize="large"/></IconButton>
-        </> ) : (
-        <Typography variant="h5" component="h2" sx={{ fontSize: '1.4rem', maxWidth: '90%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {loading ? 'Loading...' : note?.title}
-        </Typography>
-      )}
+      <UnsavedDialog open={controlledNavigate.pending}
+        onCancel={controlledNavigate.cancel}
+        onConfirm={controlledNavigate.confirm}
+        onSave={() => {handleSave(); controlledNavigate.confirm();}}
+      />
+      <NoteTitleBar
+        isAuthor={isAuthor}
+        loading={loading}
+        note={note}
+        onTitleChange={() => { checkChanges(); setErrors(null); }}
+        onSettings={() => controlledNavigate(`/notes/${note._id}/settings`)}
+        canEdit={canEdit}
+      />
       <Typography variant="subtitle2" color="text.secondary" sx={{mt: 1}}>
         {userCount} <VisibilitySharpIcon sx={{ fontSize: "medium", position: 'relative', top: 3 }} />
       </Typography>

@@ -35,13 +35,13 @@ export default function Login() {
       <FormField id="usernamemail" label="Email or Username" autoComplete="email" placeholder="your@email.com" />
       <FormField type="password" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />
       <ErrorLog errors={errors} />
-      <Button variant="contained" sx={{ borderRadius: 0, mt: 2 }} fullWidth onClick={handleSubmit} disabled={loading}>
+      <Button variant="contained" sx={{ mt: 2 }} fullWidth onClick={handleSubmit} disabled={loading}>
         <Typography variant="button" sx={{ textTransform: 'none' }}>
           {loading ? 'Logging in...' : 'Log In'}
         </Typography>
       </Button>
-      <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        Don't have an account? <Link to="/register">Sign Up</Link>
+      <Typography variant="subtitle1" align="center" sx={{ mt: 2 }}>
+        Don't have an account? <Link className="link" to="/register">Sign Up</Link>
       </Typography>
     </FormWrapper>
   )

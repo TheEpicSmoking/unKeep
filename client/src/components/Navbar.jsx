@@ -10,7 +10,7 @@ import Logo from './Logo.jsx';
 import { useState } from 'react';
 
 
-export default function Navbar({ profile, loading }) {
+export default function Navbar({ profile, loading, refresh }) {
   const { logout } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -33,8 +33,8 @@ export default function Navbar({ profile, loading }) {
 
   return (
     <AppBar position="fixed" sx={{ backgroundColor: theme.palette.primary.main }}>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignSelf: 'center', width: { xs: '100%', md: '52%' } }}>
-        <Logo sx={{color: "white", width: 100 }} />
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignSelf: 'center', width: { xs: '100%', md: '56%' } }}>
+        <Logo onClick={refresh} sx={{color: "white", width: 100, cursor: "pointer" }} />
         {loading ? null : profile ? (
         <>
           <Popover
@@ -60,8 +60,8 @@ export default function Navbar({ profile, loading }) {
             <Button startIcon={<LogoutSharpIcon />} sx={{ bgcolor: 'error.main', width: "100%", justifyContent: 'flex-start' }} onClick={() => handleLogout()}>Logout</Button>
           </ButtonGroup>
           </Popover>
-          <ButtonBase sx={{ display: 'flex', alignItems: 'center'}} onClick={handleClick}>
-            <Typography sx={{ mr: "10px"}}>{profile.username}</Typography>
+          <ButtonBase sx={{ display: 'flex', alignItems:"flex-end"}} onClick={handleClick}>
+            <Typography variant="h4" sx={{ mr: "10px", fontSize: "1.8rem", justifyContent: "end", lineHeight:1 }}>{profile.username}</Typography>
             <CustomAvatar src={profile.avatar} variant="rounded" logoWidth={22} alt={profile.username} sx={{ border: `2px solid black`, outline: `3px solid rgb(255, 255, 255)`, mr: "6px", boxShadow: "3px 3px 0px 3px rgba(255, 255, 255, 0.5)" }}/>
           </ButtonBase>
       </>

@@ -19,7 +19,7 @@ body {
   -webkit-tap-highlight-color: rgb(0, 0, 0, 0);
 }
 
-.link { /* RIMUOVI */
+.link {
   color: inherit;
 }
 

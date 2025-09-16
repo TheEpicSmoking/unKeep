@@ -158,7 +158,7 @@ export default function MyProfile({ socket }) {
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
         onDelete={handleNoteDelete}
-        title="Delete your note"
+        title="DELETE YOUR NOTE"
         description={`${note?.title} will be permanently deleted.`}
         confirmLabel='To confirm, please type "DELETE"'
         compareValue="DELETE"
@@ -171,7 +171,7 @@ export default function MyProfile({ socket }) {
         <Typography variant="h6" noWrap sx={{ maxWidth: '60%' }}>
           {note?.title || 'Loading...'}
         </Typography>
-        <Button variant="contained" color="error" sx={{ borderRadius: 0 }} onClick={() => setOpenDeleteDialog(true)} disabled={loading}>Delete Note</Button>
+        <Button variant="contained" color="error" onClick={() => setOpenDeleteDialog(true)} disabled={loading} sx={{ border: '2px solid black' }}>Delete Note</Button>
       </Box>
       <TabContext value={tabValue} >
         <TabList variant="fullWidth" sx={{ borderBottom: 1, borderColor: 'divider' }} onChange={handleTabChange}>
@@ -195,7 +195,7 @@ export default function MyProfile({ socket }) {
         </TabPanel>
       </TabContext>
       {errors && <ErrorLog errors={errors} sx={{ mb: 0 }} />}
-      <Button variant="contained" sx={{ borderRadius: 0, mt: 2, width: "100%" }} onClick={handleSubmit} disabled={loading}>Save Changes</Button>
+      <Button variant="contained" sx={{ mt: 2, width: "100%" }} onClick={handleSubmit} disabled={loading}>Save Changes</Button>
     </FormWrapper>
     </>
   );

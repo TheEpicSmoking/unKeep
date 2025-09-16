@@ -11,7 +11,6 @@ export default function Logo({ variant="logo" , ...props }) {
       {...props}
       sx={{ display: "block", ...props.sx }}
       >
-        <title>{"UnKeep logo"}</title>
         <style>{`\n.s0 { fill: ${props.sx.color} } \n`}</style>
         <g id="Logomark">
           <g id="&lt;Group&gt;">
@@ -66,7 +65,6 @@ export default function Logo({ variant="logo" , ...props }) {
       {...props}
       sx={{ display: "block", ...props.sx }}
     >
-      <title>{"UnKeep logo"}</title>
       <style>{`\n.s0 { fill: ${props.sx.color} } \n`}</style>
       <g id="Logotype">
         <g id="&lt;Group&gt;">
@@ -194,7 +192,6 @@ export default function Logo({ variant="logo" , ...props }) {
       {...props}
       sx={{ display: "block", ...props.sx }}
     >
-      <title>{"UnKeep_Logo"}</title>
       <style>{`\n.s0 { fill: ${props.sx.color} } \n`}</style>
       <g id="Logo">
         <g id="&lt;Group&gt;">

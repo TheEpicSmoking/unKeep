@@ -21,18 +21,33 @@ const theme = createTheme({
 		},
 	},
 	typography: {
-		//pixelated font
-		fontFamily: 'Roboto, sans-serif',
+		fontFamily: "Lexend",
+		fontWeightRegular: 375,
+		h6: {
+			fontWeight: 450,
+		},
+		subtitle1: {
+			fontSize: '0.9rem',
+		},
+		subtitle2: {
+			fontSize: '0.8rem',
+			fontWeight: 350,
+		},
+		h4: {
+			fontFamily: "Tiny5",
+			fontSize: '2rem',
+		},
 		button: {
 			textTransform: 'none',
+			fontFamily: "Tiny5",
 		},
 	},
 	components: {
 		MuiTooltip: {
 			styleOverrides: {
 				tooltip: {
-					backgroundColor: "#fbe23dff", // colore di sfondo
-					color: "#000000ff",           // testo
+					backgroundColor: "#fbe23dff",
+					color: "#000000ff",
 					fontSize: "0.9rem",
 					borderRadius: 0,
 					outline: "3px solid #000000ff",
@@ -53,6 +68,28 @@ const theme = createTheme({
 			styleOverrides: {
 				root: {
 					borderRadius: 0,
+				},
+			},
+		},
+		MuiIconButton: {
+			styleOverrides: {
+				root: {
+					borderRadius: 0,
+				},
+			},
+		},
+		MuiFormLabel: {
+			styleOverrides: {
+				root: {
+					fontFamily: 'Tiny5'
+				},
+			},
+		},
+		MuiDialogTitle: {
+			styleOverrides: {
+				root: {
+					fontFamily: 'Tiny5',
+					fontSize: '1.5rem',
 				},
 			},
 		},

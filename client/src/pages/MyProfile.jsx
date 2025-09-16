@@ -101,20 +101,21 @@ export default function MyProfile() {
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
         onDelete={handleAccountDelete}
-        title="Delete your account"
-        description="Your data will be permanently deleted. What happens to your notes depends on the option below:"
-        confirmLabel="To confirm, please type your username."
+        title="DELETE YOUR ACCOUNT"
+        description="This action is permanent and cannot be undone."
+        confirmLabel="To confirm, type your username."
         compareValue={user?.username}
         confirmValue={confirmUsername}
         setConfirmValue={setConfirmUsername}
         extraContent={
           <>
             <FormControlLabel
-              control={<Checkbox defaultChecked id="migrateNotes" />}
-              label={`Give ownership of each note to its first collaborator if any. Be careful, note history will be lost.`}
+              control={<Checkbox defaultChecked id="migrateNotes"/>}
+              label={`Transfer notes to the first collaborator (if any). Note history will be lost.`}
+              sx={{ mt: 1 }}
             />
-            <DialogContentText sx={{ color: 'text.hint', pl: "30px" }}>
-              If unchecked, all your notes will be deleted.
+            <DialogContentText sx={{ color: 'text.hint', pl: "30px", fontSize: '0.9rem' }}>
+              If unchecked, all notes will be permanently deleted.
             </DialogContentText>
           </>
         }
@@ -127,13 +128,13 @@ export default function MyProfile() {
           <FormField id="username" label="Username" autoComplete="username" defaultValue={user?.username} sx={{borderRadius: 0, mt:0}}></FormField>
           <FormField id="email" label="Email" autoComplete="email" defaultValue={user?.email}></FormField>
           <Stack spacing={2} direction="row" sx={{mt:4}}>
-          <Button variant="filled" sx={{ borderRadius: 0, mt:4, width: "100%", backgroundColor: 'primary.main', color: 'text.tertiary' }} onClick={handlePasswordClick} disabled={loading}>Change Password</Button>
-          <Button variant="filled" sx={{ borderRadius: 0, mt:4, width: "100%", backgroundColor: 'error.main', color: 'text.tertiary'}} onClick={() => {setOpenDeleteDialog(true)}} disabled={loading}>Delete Account</Button>
+          <Button variant="filled" sx={{ mt:4, width: "100%", backgroundColor: 'primary.main', color: 'text.tertiary' }} onClick={handlePasswordClick} disabled={loading}>Change Password</Button>
+          <Button variant="filled" sx={{ mt:4, width: "100%", backgroundColor: 'error.main', color: 'text.tertiary', border: '2px solid black' }} onClick={() => {setOpenDeleteDialog(true)}} disabled={loading}>Delete Account</Button>
           </Stack>
         </Stack>
       </Stack>
       {errors && <ErrorLog errors={errors} sx={{ mb: 0 }} />}
-      <Button variant="contained" sx={{ borderRadius: 0, mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Save Changes</Button>
+      <Button variant="contained" sx={{ mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Save Changes</Button>
     </FormWrapper>
   );
 }

@@ -65,7 +65,7 @@ export default function Dashboard() {
   useEffect(() => { fetchNotes() }, [])
   return (
     <>
-      <Navbar profile={profile} loading={loading} />
+      <Navbar profile={profile} loading={loading} refresh={fetchNotes} />
       <ErrorBanner error={error} />
       {!error && (
         <NoteList notes={notes} loading={loading} profile={profile} />

@@ -45,7 +45,7 @@ export default function ChangePassword() {
         <FormField id="new-password" label="New Password" type="password" autoComplete="new-password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
         <FormField id="confirm-password" label="Confirm Password" type="password" autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
         {errors && <ErrorLog errors={errors} sx={{ mb: 0 }} />}
-        <Button variant="contained" sx={{ borderRadius: 0, mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Change Password</Button>
+        <Button variant="contained" sx={{ mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Change Password</Button>
     </FormWrapper>
   );
 }
