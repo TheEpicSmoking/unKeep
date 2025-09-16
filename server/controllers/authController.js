@@ -66,9 +66,9 @@ export const login = async (req, res) => {
         );
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            partitioned: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            partitioned: process.env.NODE_ENV === 'production',
             maxAge: 14 * 24 * 60 * 60 * 1000
         });
         res.status(200).json({
@@ -85,9 +85,9 @@ export const logout = (req, res) => {
     try {
         res.clearCookie('refreshToken', {
             httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            partitioned: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            partitioned: process.env.NODE_ENV === 'production',
         });
         RefreshToken.deleteOne({ token: req.cookies.refreshToken })
             .then(() => {

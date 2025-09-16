@@ -219,7 +219,7 @@ export default function NoteEdit({ socket }) {
   }, [userCount]);
 
   return (
-    <Stack sx={{ bgcolor: 'background.paper', position:"absolute", top:"50%", left:"50%", transform:"translate(-50%, -50%)", padding: 2, width: '85%', maxWidth: 800, height: '90%', boxShadow: "20px 20px 0px 0px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
+    <Stack sx={{ bgcolor: 'background.paper', position:"absolute", top:"50%", left:"50%", transform:"translate(-50%, -50%)", padding: 2, width: '85%', maxWidth: 800, height: {xs: '75%', md: '90%'}, boxShadow: "20px 20px 0px 0px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
       <IconButton
         sx={{ position:"absolute", top: 5, right: 5}}
         onClick={() => controlledNavigate("/")}

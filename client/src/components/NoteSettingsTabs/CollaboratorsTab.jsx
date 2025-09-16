@@ -122,7 +122,7 @@ export default function CollaboratorsTab({
                         },
                     }}
                     />
-                    <Button variant="contained" color="error" sx={{ borderRadius: 0, boxShadow: 0 }} onClick={() => setCollaborators(collaborators.filter(c => c.user._id !== collaborator.user._id))}>Remove</Button>
+                    <Button variant="contained" color="error" sx={{ borderRadius: 0, boxShadow: 0, border: "2px solid black" }} onClick={() => setCollaborators(collaborators.filter(c => c.user._id !== collaborator.user._id))}>Remove</Button>
                 </Box>
                 </Box>
             ))}
