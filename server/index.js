@@ -105,7 +105,6 @@ console.log(MONGO_URI);
 mongoose.connect(MONGO_URI).then(() => {
     console.log('Connected to MongoDB');
     server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
 });
 }).catch(err => {
     console.error('MongoDB connection error:', err);
@@ -114,7 +113,7 @@ mongoose.connect(MONGO_URI).then(() => {
 // Middlewares
 app.use(cors(
     {
-        origin: [ "http://192.168.1.168:5173", "http://unkeep:5173", "http://localhost:5173" ],
+        origin: [ `${process.env.FRONTEND_URL}:5173` ],
         credentials: true
     }
 ));
