@@ -66,22 +66,15 @@ export const login = async (req, res) => {
         );
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
-            partitioned: process.env.NODE_ENV === 'production',
+            secure: true,
+            sameSite: 'None',
+            partitioned: true,
             maxAge: 14 * 24 * 60 * 60 * 1000
         });
-        if (process.env.NODE_ENV === 'production') {
-            res.status(200).json({
-            message: 'Login successful',
-            accessToken,
-            refreshToken
-        });
-        } else {
         res.status(200).json({
             message: 'Login successful',
             accessToken
-        })};
+        });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: "Internal server error" });
@@ -92,9 +85,9 @@ export const logout = (req, res) => {
     try {
         res.clearCookie('refreshToken', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
-            partitioned: process.env.NODE_ENV === 'production',
+            secure: true,
+            sameSite: 'None',
+            partitioned: true,
         });
         RefreshToken.deleteOne({ token: req.cookies.refreshToken })
             .then(() => {
@@ -134,9 +127,6 @@ export const changePassword = async (req, res) => {
 export const refreshAccessToken = async (req, res) => {
     try {
         let { refreshToken } = req.cookies;
-        if (process.env.NODE_ENV === 'production') {
-            refreshToken = req.body.refreshToken || refreshToken;
-        }
         if (!refreshToken) {
             return res.status(401).json({ error: 'No refresh token provided' });
         }

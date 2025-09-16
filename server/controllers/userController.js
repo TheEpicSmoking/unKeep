@@ -165,7 +165,7 @@ export const deleteMyUser = async (req, res) => {
         await Note.updateMany({ "collaborators.user": req.userId }, { $pull: { collaborators: { user: req.userId } } });
         res.clearCookie('refreshToken', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'strict',
         });
         RefreshToken.deleteOne({ token: req.cookies.refreshToken })

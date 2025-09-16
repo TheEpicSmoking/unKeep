@@ -14,7 +14,7 @@ export default function FormWrapper({ title, children, logo = true, onClose, ...
             >
                 <Close sx={{width: "4vw", height: "4vw", maxWidth:"25px", maxHeight:"25px"}}/>
             </IconButton>
-            {logo && <Logo sx={{ justifySelf:"center", mx:"auto", mb: 2, width: {xs: 60, md: 300}}}/>}
+            {logo && <Logo sx={{ justifySelf:"center", mx:"auto", mb: 2, width: {xs: 100, md: 300}}}/>}
             <Typography variant="h4" component='h1' align="start" gutterBottom>
                 {title}
             </Typography>

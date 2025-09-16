@@ -3,8 +3,10 @@ import AppRoutes from './routes.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import CustomThemeProvider from './theme/CustomThemeProvider.jsx';
 import { io } from "socket.io-client";
+import { config } from 'dotenv';
 
-const socket = io("http://192.168.1.168:8000");
+config();
+const socket = io(process.env.BACKEND_URL);
 
 export default function App() {
   return (
