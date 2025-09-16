@@ -2,30 +2,24 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scrollbar-color: rgba(0, 0, 0, 1) rgba(0, 0, 0, 0.092);
 }
 
 html {
-  height: 100%;
   background-color: #fff08fff;
 }
 
 body {
-  height: 100%;
-
-  overflow-y: overlay;
   background-color: #fff08fff;
+  /* Hide url bar on mobile */
+  overflow-y: overlay;
   -webkit-overflow-scrolling: touch;
+  /* Disable highlight on touch and context menu on mobile */
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: rgb(0, 0, 0, 0);
-  width: 100%;
-  top: 0;
-  left: 0;
 }
 
-* {
-  scrollbar-color: rgba(0, 0, 0, 1) rgba(0, 0, 0, 0.092);
-}
-.link {
+.link { /* RIMUOVI */
   color: inherit;
 }
 

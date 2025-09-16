@@ -260,7 +260,7 @@ export default function NoteEdit({ socket }) {
         />
         <IconButton size="small" sx={{position: 'absolute', top: 43, right: 7}} color="primary" onClick={(e) => controlledNavigate(`/notes/${note._id}/settings`)}><TuneSharpIcon fontSize="large"/></IconButton>
         </> ) : (
-        <Typography variant="h5" component="h2" sx={{ fontSize: '1.4rem', maxWidth: '90%  ' }}>
+        <Typography variant="h5" component="h2" sx={{ fontSize: '1.4rem', maxWidth: '90%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {loading ? 'Loading...' : note?.title}
         </Typography>
       )}

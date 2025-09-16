@@ -3,7 +3,7 @@ import { useTheme } from '@mui/material/styles'
 import Close from '@mui/icons-material/Close'
 import Logo from './Logo'
 
-export default function AuthFormWrapper({ title, children, logo = true, onClose, ...props}) {
+export default function FormWrapper({ title, children, logo = true, onClose, ...props}) {
     const theme = useTheme();
     return (
         <Card variant="outlined" sx={{position:"absolute", top:"50%", left:"50%", transform:"translate(-50%, -50%)", padding: 2, width: '85%', maxWidth: 800, boxShadow: "20px 20px 0px 0px", outline: 3, outlineColor: 'primary.main', borderRadius: 0, ...props.sx}}>

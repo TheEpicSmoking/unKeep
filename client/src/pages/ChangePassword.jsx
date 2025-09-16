@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useNavigate } from "react-router";
-import AuthFormWrapper from "../components/AuthFormWrapper";
+import FormWrapper from "../components/FormWrapper.jsx";
 import FormField from "../components/FormField";
 import ErrorLog from "../components/ErrorLog";
 
@@ -40,12 +40,12 @@ export default function ChangePassword() {
   }, [currentPassword, newPassword, confirmPassword]);
 
   return (
-    <AuthFormWrapper title="Change Password" logo={false} onClose={() => navigate("/me")}>
+    <FormWrapper title="Change Password" logo={false} onClose={() => navigate("/me")}>
         <FormField id="current-password" label="Current Password" type="password" autoComplete="current-password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
         <FormField id="new-password" label="New Password" type="password" autoComplete="new-password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
         <FormField id="confirm-password" label="Confirm Password" type="password" autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
         {errors && <ErrorLog errors={errors} sx={{ mb: 0 }} />}
         <Button variant="contained" sx={{ borderRadius: 0, mt: 4, width: "100%" }} onClick={handleSubmit} disabled={loading}>Change Password</Button>
-    </AuthFormWrapper>
+    </FormWrapper>
   );
 }

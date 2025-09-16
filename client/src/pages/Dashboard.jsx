@@ -5,7 +5,7 @@ import ErrorBanner from '../components/ErrorBanner.jsx';
 import AddNoteFab from '../components/AddNoteFab.jsx';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Typography, Card , Box} from '@mui/material';
+import DashboardBanner from '../components/DashboardBanner.jsx';
 
 export default function Dashboard() {
   const { createNote, getNotes, getMyProfile } = useAuth();
@@ -32,7 +32,7 @@ export default function Dashboard() {
       setNotes(Array.isArray(fetchedNotes) ? fetchedNotes : [fetchedNotes])
     } catch (error) {
       console.error('Failed to fetch notes:', error);
-      if ((error?.response?.status !== 401 && profile) && error?.response?.status !== 404) {
+      if ((error?.response?.status !== 403 && !profile) && error?.response?.status !== 404) {
         setError(error);
       }
     }
@@ -40,6 +40,7 @@ export default function Dashboard() {
       setLoading(false)
     }
   }
+    //isMounted pattern to avoid setting state on unmounted component
     useEffect(() => {
     let isMounted = true;
     setLoading(true);
@@ -69,25 +70,14 @@ export default function Dashboard() {
       {!error && (
         <NoteList notes={notes} loading={loading} profile={profile} />
       )}
-      {!profile && !error && !loading && <Card color="secondary" variant="solid" sx={{mb: 3, width: {xs: '90%', md: '52%'}, alignSelf: 'center', boxShadow: "10px 10px 0px 2px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
-        <Typography variant="h5" align="center" sx={{ p: 2 }}>
-          Welcome to UnKeep!
-        </Typography>
-        <Typography variant="h5" align="center" sx={{ p: 2 }}>
-          Create an account or log in to start organizing your notes.
-        </Typography>
-      </Card>}
       {profile && notes.length === 0 && !loading && !error && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignContent: 'center', justifyContent: 'center', mt: 5, width: {xs: '90%', md: '50%'}, alignSelf: 'center', gap: 5 }}>
-        <Card color="secondary" variant="solid" sx={{mr: 3, width: '100%', boxShadow: "10px 10px 0px 2px", outline: 3, outlineColor: 'primary.main', borderRadius: 0 }}>
-          <Typography variant="h6" align="center" sx={{ p: 2, color: 'text.secondary' }}>
-            Click the "+" button below to create your first note and start organizing your thoughts!
-          </Typography>
-        </Card>
-        <AddNoteFab onClick={() => handleCreateNote()} sx={{ position: 'relative', right:0, bottom: 0, height: 100, width: 100, alignSelf: 'center' }} />
-        </Box>
+        <DashboardBanner message='Click the "+" button below to create your first note and start organizing your thoughts!'>
+          <AddNoteFab
+            onClick={handleCreateNote}
+            sx={{ position: 'relative', right: 0, bottom: 0, height: 100, width: 100, alignSelf: 'center' }}
+          />
+        </DashboardBanner>
       )}
       {profile && notes.length > 0 && !loading && !error && <AddNoteFab onClick={() => handleCreateNote()} />}
     </>
-  );
-}
+  );}

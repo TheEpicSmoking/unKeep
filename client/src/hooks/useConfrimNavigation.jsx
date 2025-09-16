@@ -14,12 +14,14 @@ export default function useControlledNavigation(shouldBlock) {
   }
 
   controlledNavigate.pending = pending;
+
   controlledNavigate.confirm = () => {
     if (pending) {
       navigate(pending.to, pending.options);
       setPending(null);
     }
   };
+  
   controlledNavigate.cancel = () => setPending(null);
 
   return controlledNavigate;

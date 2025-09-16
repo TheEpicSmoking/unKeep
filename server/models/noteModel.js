@@ -10,7 +10,7 @@ const noteSchema = new mongoose.Schema({
     },
     content: {
         type: String,
-        maxlength: [10000, "Content cannot exceed 10000 characters"],
+        maxlength: [100000, "Content cannot exceed 100000 characters"],
     },
     author: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +25,7 @@ const noteSchema = new mongoose.Schema({
     tags: [{
         type: String,
         trim: true,
-        maxlength: [20, "Tag cannot exceed 20 characters"],
+        maxlength: [30, "Tag cannot exceed 30 characters"],
     }],
     currentVersion: {
         type: Number,

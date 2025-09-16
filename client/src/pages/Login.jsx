@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button, Typography } from '@mui/material'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNavigate, Link } from 'react-router'
-import AuthFormWrapper from '../components/AuthFormWrapper'
+import FormWrapper from '../components/FormWrapper.jsx'
 import FormField from '../components/FormField'
 import ErrorLog from '../components/ErrorLog'
 
@@ -31,8 +31,8 @@ export default function Login() {
   }
 
   return (
-    <AuthFormWrapper title="Log In" onClose={() => navigate("/")}>
-      <FormField id="usernamemail" label="Email or Username" autoComplete="email" />
+    <FormWrapper title="Log In" onClose={() => navigate("/")}>
+      <FormField id="usernamemail" label="Email or Username" autoComplete="email" placeholder="your@email.com" />
       <FormField type="password" value={passwordValue} onChange={e => setPasswordValue(e.target.value)} />
       <ErrorLog errors={errors} />
       <Button variant="contained" sx={{ borderRadius: 0, mt: 2 }} fullWidth onClick={handleSubmit} disabled={loading}>
@@ -41,8 +41,8 @@ export default function Login() {
         </Typography>
       </Button>
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        Don't have an account? <Link className='link' to="/register">Sign Up</Link>
+        Don't have an account? <Link to="/register">Sign Up</Link>
       </Typography>
-    </AuthFormWrapper>
+    </FormWrapper>
   )
 }

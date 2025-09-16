@@ -75,6 +75,7 @@ export const updateMyUser = async (req, res) => {
         }
         user.username = username;
         user.email = email;
+        //Delete previous avatar if changed or removed
         if (user.avatar && avatar === "" || (req.file && req.file.fieldname === "avatar")) {
             console.log(user.avatar);
             try {
@@ -87,6 +88,7 @@ export const updateMyUser = async (req, res) => {
                 return res.status(500).json({ error: 'Failed to delete previous avatar' });
             }
         }
+        // Upload new avatar if provided
         if (req.file && req.file.fieldname === "avatar") {
             try {
                 const uploadPromise = new Promise((resolve, reject) => {

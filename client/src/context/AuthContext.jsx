@@ -16,6 +16,8 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
+  // AUTH
+
   const register = async (username, email, password) => {
     try {
       let res = await api.post('auth/register', { username, email, password })
@@ -64,6 +66,58 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // USERS
+
+    const getUsers = async (query) => {
+    try {
+      const res = await api.get(`users/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        },
+        params: {
+          q: query
+        }
+      })
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const getMyProfile = async () => {
+    try {
+      const res = await api.get('users/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      })
+      return res.data
+    } catch (error) {
+      if (error.response?.status === 404) {
+        logout()
+      }
+      throw error
+    }
+  }
+
+  const updateProfile = async (data) => {
+    try {
+      let config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      };
+      let body = data;
+      if (data instanceof FormData) {
+        delete config.headers['Content-Type'];
+      }
+      const res = await api.put('users/me', body, config);
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   const changePassword = async (currentPassword, newPassword) => {
     try {
       const res = await api.post('auth/change-password', { currentPassword, newPassword }, {
@@ -76,6 +130,30 @@ export function AuthProvider({ children }) {
       throw error
     }
   }
+
+  const deleteProfile = async (migrateNotes) => {
+    try {
+      let res;
+      if (migrateNotes) {
+        res = await api.delete('users/me?migrateNotes=true', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+      } else {
+        res = await api.delete('users/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+      }
+      logout()
+      return res.data
+    } catch (error) {
+      throw error
+    }
+  }
+
 
   // NOTES
 
@@ -157,78 +235,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const getUsers = async (query) => {
-    try {
-      const res = await api.get(`users/`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        },
-        params: {
-          q: query
-        }
-      })
-      return res.data
-    } catch (error) {
-      throw error
-    }
-  }
-
-  const getMyProfile = async () => {
-    try {
-      const res = await api.get('users/me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      })
-      return res.data
-    } catch (error) {
-      if (error.response?.status === 404) {
-        logout()
-      }
-      throw error
-    }
-  }
-
-  const updateProfile = async (data) => {
-    try {
-      let config = {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      };
-      let body = data;
-      if (data instanceof FormData) {
-        delete config.headers['Content-Type'];
-      }
-      const res = await api.put('users/me', body, config);
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  const deleteProfile = async (migrateNotes) => {
-    try {
-      let res;
-      if (migrateNotes) {
-        res = await api.delete('users/me?migrateNotes=true', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        })
-      } else {
-        res = await api.delete('users/me', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        })
-      }
-      logout()
-      return res.data
-    } catch (error) {
-      throw error
-    }
-  }
+  // NOTE VERSIONS
 
   const getNoteHistory = async (id) => {
     try {
@@ -282,6 +289,7 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Interceptor for token refresh
   const setupInterceptor = () => {
     api.interceptors.response.use(
       res => res,
