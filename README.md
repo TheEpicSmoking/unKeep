@@ -64,9 +64,9 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 ### 3. Start the stack  
 From the project root:  
-//VANNO QUI
+```
 sudo docker-compose up -d --build
-//VANNO QUI
+```
 
 This will start:  
 - **Frontend** → [http://localhost:8080](http://localhost:8080)  
