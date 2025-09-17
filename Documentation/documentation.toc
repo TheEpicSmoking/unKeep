@@ -1,0 +1,77 @@
+\contentsline {section}{\numberline {1}Introduzione}{3}{section.1}%
+\contentsline {section}{\numberline {2}Architettura del'applicazione}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Autenticazione}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Dashboard}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Gestione utente}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Nota}{5}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Gestione della nota}{6}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Modello dei dati}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}User}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Note}{7}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}NoteVersion}{7}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}RefreshToken}{8}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Documentazione API}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Autenticazione e Autorizzazione (Auth)}{9}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}\texttt {POST /auth/register}}{9}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}\texttt {POST /auth/login}}{9}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}\texttt {POST /auth/refresh}}{9}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}\texttt {POST /auth/logout}}{9}{subsubsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.5}\texttt {POST /auth/change-password}}{9}{subsubsection.4.1.5}%
+\contentsline {subsection}{\numberline {4.2}Gestione Note (Notes)}{10}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}\texttt {POST /notes}}{10}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}\texttt {GET /notes}}{10}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}\texttt {GET /notes/\{noteId\}}}{10}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}\texttt {PUT /notes/\{noteId\}}}{10}{subsubsection.4.2.4}%
+\contentsline {subsubsection}{\numberline {4.2.5}\texttt {DELETE /notes/\{noteId\}}}{11}{subsubsection.4.2.5}%
+\contentsline {subsection}{\numberline {4.3}Cronologia Note (Versions)}{11}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}\texttt {GET /notes/\{noteId\}/versions?type=\{string\}}}{11}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}\texttt {GET /notes/\{noteId\}/versions/\{version\}?type=\{string\}}}{11}{subsubsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.3}\texttt {POST /notes/\{noteId\}/versions/\{version\}/revert}}{11}{subsubsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.3.4}\texttt {POST /notes/\{noteId\}/versions/\{version\}/rebase}}{12}{subsubsection.4.3.4}%
+\contentsline {subsection}{\numberline {4.4}Gestione Utenti (Users)}{12}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}\texttt {GET /users?q=\{string\}}}{12}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}\texttt {GET /users/me}}{12}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}\texttt {PUT /users/me}}{12}{subsubsection.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4}\texttt {DELETE /users?migrateNotes=\{boolean\}}}{12}{subsubsection.4.4.4}%
+\contentsline {section}{\numberline {5}Componenti React}{14}{section.5}%
+\contentsline {paragraph}{\numberline {5.0.0.1}App}{14}{paragraph.5.0.0.1}%
+\contentsline {paragraph}{\numberline {5.0.0.2}Main}{14}{paragraph.5.0.0.2}%
+\contentsline {paragraph}{\numberline {5.0.0.3}AppRoutes}{14}{paragraph.5.0.0.3}%
+\contentsline {subsection}{\numberline {5.1}Components}{14}{subsection.5.1}%
+\contentsline {paragraph}{\numberline {5.1.0.1}AddNoteFab}{14}{paragraph.5.1.0.1}%
+\contentsline {paragraph}{\numberline {5.1.0.2}AvatarField}{14}{paragraph.5.1.0.2}%
+\contentsline {paragraph}{\numberline {5.1.0.3}CustomAvatar}{14}{paragraph.5.1.0.3}%
+\contentsline {paragraph}{\numberline {5.1.0.4}DashboardBanner}{14}{paragraph.5.1.0.4}%
+\contentsline {paragraph}{\numberline {5.1.0.5}DeleteDialog}{14}{paragraph.5.1.0.5}%
+\contentsline {paragraph}{\numberline {5.1.0.6}ErrorBanner}{14}{paragraph.5.1.0.6}%
+\contentsline {paragraph}{\numberline {5.1.0.7}ErrorLog}{14}{paragraph.5.1.0.7}%
+\contentsline {paragraph}{\numberline {5.1.0.8}FormField}{15}{paragraph.5.1.0.8}%
+\contentsline {paragraph}{\numberline {5.1.0.9}FormWrapper}{15}{paragraph.5.1.0.9}%
+\contentsline {paragraph}{\numberline {5.1.0.10}Logo}{15}{paragraph.5.1.0.10}%
+\contentsline {paragraph}{\numberline {5.1.0.11}Navbar}{15}{paragraph.5.1.0.11}%
+\contentsline {paragraph}{\numberline {5.1.0.12}Note}{15}{paragraph.5.1.0.12}%
+\contentsline {paragraph}{\numberline {5.1.0.13}NoteList}{15}{paragraph.5.1.0.13}%
+\contentsline {paragraph}{\numberline {5.1.0.14}NoteTitleBar}{15}{paragraph.5.1.0.14}%
+\contentsline {paragraph}{\numberline {5.1.0.15}PasswordField}{15}{paragraph.5.1.0.15}%
+\contentsline {paragraph}{\numberline {5.1.0.16}ProtectedRoute}{15}{paragraph.5.1.0.16}%
+\contentsline {paragraph}{\numberline {5.1.0.17}UnsavedDialog}{15}{paragraph.5.1.0.17}%
+\contentsline {paragraph}{\numberline {5.1.0.18}UserModal}{15}{paragraph.5.1.0.18}%
+\contentsline {paragraph}{\numberline {5.1.0.19}VersionModal}{15}{paragraph.5.1.0.19}%
+\contentsline {subsubsection}{\numberline {5.1.1}NoteSettingsTabs}{15}{subsubsection.5.1.1}%
+\contentsline {paragraph}{\numberline {5.1.1.1}CollaboratorsTab}{15}{paragraph.5.1.1.1}%
+\contentsline {paragraph}{\numberline {5.1.1.2}NoteHistoryTab}{16}{paragraph.5.1.1.2}%
+\contentsline {paragraph}{\numberline {5.1.1.3}TagsTab}{16}{paragraph.5.1.1.3}%
+\contentsline {subsection}{\numberline {5.2}Context}{16}{subsection.5.2}%
+\contentsline {paragraph}{\numberline {5.2.0.1}AuthContext \& AuthProvider}{16}{paragraph.5.2.0.1}%
+\contentsline {subsection}{\numberline {5.3}Hooks}{16}{subsection.5.3}%
+\contentsline {paragraph}{\numberline {5.3.0.1}useControlledNavigation}{16}{paragraph.5.3.0.1}%
+\contentsline {subsection}{\numberline {5.4}Pages}{16}{subsection.5.4}%
+\contentsline {paragraph}{\numberline {5.4.0.1}ChangePassword}{16}{paragraph.5.4.0.1}%
+\contentsline {paragraph}{\numberline {5.4.0.2}Dashboard}{16}{paragraph.5.4.0.2}%
+\contentsline {paragraph}{\numberline {5.4.0.3}Login}{16}{paragraph.5.4.0.3}%
+\contentsline {paragraph}{\numberline {5.4.0.4}MyProfile}{16}{paragraph.5.4.0.4}%
+\contentsline {paragraph}{\numberline {5.4.0.5}NoteEdit}{17}{paragraph.5.4.0.5}%
+\contentsline {paragraph}{\numberline {5.4.0.6}NoteSettings}{17}{paragraph.5.4.0.6}%
+\contentsline {paragraph}{\numberline {5.4.0.7}SignUp}{17}{paragraph.5.4.0.7}%
+\contentsline {subsection}{\numberline {5.5}Theme}{17}{subsection.5.5}%
+\contentsline {paragraph}{\numberline {5.5.0.1}CustomThemeProvider}{17}{paragraph.5.5.0.1}%
