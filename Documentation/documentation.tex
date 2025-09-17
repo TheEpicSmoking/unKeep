@@ -53,7 +53,8 @@
 \newpage
 \section{Introduzione}
 unKeep è una web application per la gestione e condivisione di note. Estende il concetto tradizionale di note-taking con funzionalità di collaborazione in tempo reale e un sistema di versioning che permette di visualizzare, ripristinare e gestire le versioni precedenti delle note.
-Il progetto è completamente hostato e accessibile all'indirizzo \url{https://unkeep.onrender.com}. Per scopi di sviluppo e testing locale, viene fornito un file \texttt{docker-compose.yml} che permette il deploy dell'intera applicazione in ambiente di sviluppo.\section{Architettura del'applicazione}
+Il progetto è completamente hostato e accessibile all'indirizzo \url{https://unkeep.onrender.com}. Per scopi di sviluppo e testing locale, viene fornito un file \texttt{docker-compose.yml} che permette il deploy dell'intera applicazione \texttt{[Frontend :8080, Backend :8000, Database :27018]} in ambiente di sviluppo.
+\section{Architettura del'applicazione}
 \subsection{Autenticazione}
 Al primo accesso al sito, l’utente viene reindirizzato alla pagina di login, qui può scegliere se effettuare il login o registrarsi. \\
 La procedura di registrazione richiede l’inserimento di un username, di una password e di un indirizzo email. I dati vengono inviati al backend, che verifica la conformità ai requisiti del modello di dati. La password viene sottoposta ad hashing e, in caso di esito positivo, viene creato un nuovo utente nel database. Al termine, l’utente viene autenticato automaticamente. \\
